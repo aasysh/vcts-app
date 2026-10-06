@@ -235,7 +235,7 @@
     deptDistrict: 'MORANG', deptLocation: 'Biratnagar-09',
     goods: 'Alcohol', unitType: 'कार्टुन',
     ownPan: '300039166', ownName: 'KAMANA TRADERS', challanDest: 'Mobile Sales-Morang',
-    suppliers: [{ name: 'KAMANA TRADERS', pan: '300039166' }, { name: 'DANGAL TRADERS', pan: '107353065' }]
+    suppliers: [{ name: 'KAMANA TRADERS', pan: '300039166' }, { name: 'DANGAL BROTHERS', pan: '107353065' }]
   };
   var DEFAULT_CUSTOMERS = [
     { id: 'c1', name: 'रुवि होटल', pan: '622156260', district: 'MORANG', location: '' },
@@ -256,8 +256,10 @@
     S.suppliers = [{ name: S.ownName || 'KAMANA TRADERS', pan: S.ownPan || '300039166' }];
   }
   if (!S.suppliers.some(function (s) { return s.pan === '107353065'; }) && !S.dangalAdded) {
-    S.suppliers.push({ name: 'DANGAL TRADERS', pan: '107353065' });
+    S.suppliers.push({ name: 'DANGAL BROTHERS', pan: '107353065' });
   }
+  // Earlier versions called it "DANGAL TRADERS"; the firm is DANGAL BROTHERS.
+  S.suppliers.forEach(function (s) { if (s.pan === '107353065' && s.name === 'DANGAL TRADERS') s.name = 'DANGAL BROTHERS'; });
   S.dangalAdded = true;
   var sup = function (i) { return S.suppliers[i] || S.suppliers[0]; };
   var C = load('customers', null) || DEFAULT_CUSTOMERS.slice();
@@ -415,6 +417,7 @@
       var b = bills[i];
       var mark = function (f, msg) { var el = card.querySelector('[data-f=' + f + ']'); if (el) el.classList.add('err'); errs.push('बिल ' + (i + 1) + ': ' + msg); };
       if (b.type === '1' && !custById(b.cust)) mark('cust', 'ग्राहक छान्नुहोस्');
+      if (b.type === '1' && custById(b.cust) && custById(b.cust).pan === sup(b.sup).pan) mark('cust', 'बिलमा बिक्रेता र खरिदकर्ता एउटै हुन मिल्दैन');
       if (!/^[1-9][0-9]*$/.test(b.no)) mark('no', 'नम्बर अंकमा मात्र, ० बाट सुरु नहुने');
       if (b.date && !/^20[0-9]{2}-[01][0-9]-[0-3][0-9]$/.test(b.date)) mark('date', 'मिति 2083-06-20 जस्तो लेख्नुहोस्');
       if (!(Number(b.qty) > 0)) mark('qty', 'संख्या लेख्नुहोस्');
