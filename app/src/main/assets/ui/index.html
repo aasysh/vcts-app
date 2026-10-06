@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="ne">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VCTS Helper</title>
+<style>
+  :root {
+    --ink: #14213d; --muted: #5c677d; --line: #dfe3ea; --bg: #f4f6f9; --card: #ffffff;
+    --brand: #0f4c81; --brand-2: #e8f0f8; --ok: #1b7f4b; --ok-bg: #e6f4ec; --warn: #9a5b00; --warn-bg: #fff4e0;
+    --bad: #b42318; --bad-bg: #fdecea; --radius: 14px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, "Noto Sans Devanagari", "Noto Sans", sans-serif; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--brand); color: #fff; padding: 14px 16px 12px; }
+  header h1 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: .2px; }
+  header .sub { font-size: 13px; opacity: .85; margin-top: 2px; }
+  main { padding: 14px 14px 96px; max-width: 640px; margin: 0 auto; }
+  nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 5; display: flex; background: #fff; border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+  nav button { flex: 1; border: 0; background: none; padding: 9px 4px 10px; font: inherit; font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  nav button .ico { font-size: 20px; line-height: 1; }
+  nav button.on { color: var(--brand); font-weight: 700; }
+  .screen { display: none; }
+  .screen.on { display: block; }
+  h2 { font-size: 17px; margin: 6px 2px 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+  .card h3 { margin: 0 0 10px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+  label:first-child { margin-top: 0; }
+  input, select, textarea { width: 100%; font: inherit; font-size: 16px; color: var(--ink); padding: 11px 12px; border: 1px solid #c9d0db; border-radius: 10px; background: #fff; }
+  input:focus, select:focus { outline: 2px solid #9cc3e6; border-color: var(--brand); }
+  input.err, select.err { border-color: var(--bad); background: var(--bad-bg); }
+  .row { display: flex; gap: 10px; }
+  .row > div { flex: 1; min-width: 0; }
+  .seg { display: flex; border: 1px solid #c9d0db; border-radius: 10px; overflow: hidden; }
+  .seg button { flex: 1; border: 0; background: #fff; padding: 10px; font: inherit; color: var(--muted); }
+  .seg button.on { background: var(--brand); color: #fff; font-weight: 700; }
+  .btn { display: block; width: 100%; border: 0; border-radius: 12px; padding: 14px; font: inherit; font-weight: 700; font-size: 16px; margin-top: 10px; }
+  .btn.primary { background: var(--brand); color: #fff; }
+  .btn.go { background: var(--ok); color: #fff; }
+  .btn.ghost { background: var(--brand-2); color: var(--brand); }
+  .btn.plain { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  .btn.danger { background: #fff; color: var(--bad); border: 1px solid #f1b8b3; }
+  .btn:disabled { opacity: .5; }
+  .link { background: none; border: 0; color: var(--brand); font: inherit; font-size: 14px; padding: 4px 0; }
+  .link.bad { color: var(--bad); }
+  .muted { color: var(--muted); font-size: 13.5px; }
+  .note { border-radius: 12px; padding: 11px 13px; font-size: 14px; margin: 10px 0; }
+  .note.ok { background: var(--ok-bg); color: var(--ok); }
+  .note.warn { background: var(--warn-bg); color: var(--warn); }
+  .note.bad { background: var(--bad-bg); color: var(--bad); }
+  .note.info { background: var(--brand-2); color: var(--brand); }
+  dl.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; font-size: 14.5px; }
+  dl.kv dt { color: var(--muted); }
+  dl.kv dd { margin: 0; font-weight: 600; word-break: break-word; }
+  table.bills { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.bills th, table.bills td { text-align: left; padding: 7px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.bills th { color: var(--muted); font-weight: 600; font-size: 12.5px; }
+  table.bills td.num, table.bills th.num { text-align: right; white-space: nowrap; }
+  .total { display: flex; justify-content: space-between; font-weight: 700; margin-top: 10px; font-size: 15px; }
+  .steps { list-style: none; padding: 0; margin: 0; }
+  .steps li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .steps li:last-child { border-bottom: 0; }
+  .steps .st { width: 22px; flex: none; text-align: center; }
+  .steps .d { color: var(--muted); font-size: 13px; }
+  .spin { display: inline-block; width: 16px; height: 16px; border: 2.5px solid #b9cde2; border-top-color: var(--brand); border-radius: 50%; animation: sp .8s linear infinite; vertical-align: -2px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  .big { font-size: 22px; font-weight: 800; letter-spacing: .5px; }
+  .list-item { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .chip { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--brand-2); color: var(--brand); font-weight: 600; }
+  .chip.ok { background: var(--ok-bg); color: var(--ok); }
+  .chip.bad { background: var(--bad-bg); color: var(--bad); }
+  .chip.warn { background: var(--warn-bg); color: var(--warn); }
+  .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .actions .btn { margin-top: 0; flex: 1; padding: 11px; font-size: 14.5px; }
+  .modal { position: fixed; inset: 0; background: rgba(15, 25, 45, .45); display: none; align-items: flex-end; z-index: 20; }
+  .modal.on { display: flex; }
+  .sheet { background: #fff; width: 100%; max-width: 640px; margin: 0 auto; border-radius: 18px 18px 0 0; padding: 16px 16px 22px; max-height: 92vh; overflow: auto; }
+  .sheet h3 { margin: 0 0 6px; }
+  .empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>VCTS Helper</h1>
+  <div class="sub" id="hdrSub">Consignment छिटो बनाउनुहोस्</div>
+</header>
+
+<main>
+  <!-- NEW -->
+  <section class="screen on" id="scr-new">
+    <div id="setupHint"></div>
+    <div class="card">
+      <h3>गन्तव्य (Destination)</h3>
+      <label for="destDistrict">जिल्ला (District)</label>
+      <select id="destDistrict"></select>
+      <label for="destExtra">स्थान थप (optional)</label>
+      <input id="destExtra" placeholder="खाली छोड्न सकिन्छ">
+    </div>
+    <div id="billList"></div>
+    <button class="btn ghost" id="addBill">+ अर्को बिल थप्नुहोस्</button>
+    <button class="btn primary" id="toReview">जाँच गर्नुहोस् (Review) →</button>
+  </section>
+
+  <!-- REVIEW -->
+  <section class="screen" id="scr-review">
+    <h2>एक पटक जाँच गर्नुहोस्</h2>
+    <div class="card"><dl class="kv" id="revFixed"></dl></div>
+    <div class="card">
+      <h3>बिलहरू</h3>
+      <table class="bills" id="revBills"></table>
+      <div class="total"><span>जम्मा</span><span id="revTotal"></span></div>
+    </div>
+    <div class="note warn">Confirm थिचेपछि VCTS मा save, lock र vehicle start हुन्छ। VCTS मा गल्ती सच्याउन गाह्रो हुन्छ, त्यसैले नम्बरहरू राम्ररी हेर्नुहोस्।</div>
+    <button class="btn go" id="confirmRun">✓ Confirm — VCTS मा बनाउनुहोस्</button>
+    <button class="btn plain" id="dryRun">Test मात्र (फारम भर्ने, save नगर्ने)</button>
+    <button class="btn plain" id="backEdit">← सच्याउनुहोस्</button>
+  </section>
+
+  <!-- RUN -->
+  <section class="screen" id="scr-run">
+    <h2 id="runTitle">VCTS मा काम हुँदैछ…</h2>
+    <div class="card"><ul class="steps" id="steps"></ul></div>
+    <div id="runResult"></div>
+    <div class="actions" id="runActions">
+      <button class="btn plain" id="showSite">VCTS page हेर्नुहोस्</button>
+      <button class="btn danger" id="stopRun">रोक्नुहोस्</button>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="screen" id="scr-history">
+    <h2>पहिलेका consignment</h2>
+    <div id="histList"></div>
+  </section>
+
+  <!-- CUSTOMERS -->
+  <section class="screen" id="scr-customers">
+    <h2>ग्राहकहरू</h2>
+    <p class="muted">बिलमा छान्नका लागि। PAN राख्दा VCTS ले नाम आफैं भर्छ।</p>
+    <div id="custList"></div>
+    <button class="btn ghost" id="addCust">+ नयाँ ग्राहक</button>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="screen" id="scr-settings">
+    <h2>सेटिङ</h2>
+    <div class="card">
+      <h3>VCTS लगइन</h3>
+      <label for="s_username">User Name</label>
+      <input id="s_username" autocomplete="username" autocapitalize="off">
+      <label for="s_password">Password</label>
+      <input id="s_password" type="password" autocomplete="current-password" placeholder="">
+      <div class="muted" id="pwState"></div>
+    </div>
+    <div class="card">
+      <h3>सधैं उही रहने विवरण</h3>
+      <label for="s_vehicle">गाडी नम्बर (VCTS जस्तै: KO1CHA7335)</label>
+      <input id="s_vehicle" autocapitalize="characters">
+      <label for="s_driverMobile">चालकको मोबाइल नम्बर</label>
+      <input id="s_driverMobile" inputmode="numeric">
+      <div class="row">
+        <div><label for="s_deptDistrict">कहाँबाट (जिल्ला)</label><input id="s_deptDistrict" autocapitalize="characters"></div>
+        <div><label for="s_deptLocation">स्थान</label><input id="s_deptLocation"></div>
+      </div>
+      <div class="row">
+        <div><label for="s_goods">सामानको प्रकृति</label><input id="s_goods"></div>
+        <div><label for="s_unitType">इकाई</label><input id="s_unitType"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>तपाईंको फर्म</h3>
+      <div class="row">
+        <div><label for="s_ownPan">PAN</label><input id="s_ownPan" inputmode="numeric"></div>
+        <div><label for="s_ownName">नाम</label><input id="s_ownName"></div>
+      </div>
+      <label for="s_challanDest">चलानको गन्तव्य स्थान</label>
+      <input id="s_challanDest">
+    </div>
+    <button class="btn primary" id="saveSettings">सेभ गर्नुहोस्</button>
+    <button class="btn ghost" id="syncBtn">लगइन जाँच र VCTS sync</button>
+    <div id="syncResult"></div>
+  </section>
+</main>
+
+<nav>
+  <button class="on" data-go="new"><span class="ico">＋</span>नयाँ</button>
+  <button data-go="history"><span class="ico">☰</span>इतिहास</button>
+  <button data-go="customers"><span class="ico">☺</span>ग्राहक</button>
+  <button data-go="settings"><span class="ico">⚙</span>सेटिङ</button>
+</nav>
+
+<!-- customer editor -->
+<div class="modal" id="custModal">
+  <div class="sheet">
+    <h3 id="custTitle">नयाँ ग्राहक</h3>
+    <label for="c_name">नाम</label>
+    <input id="c_name">
+    <label for="c_pan">PAN (९ अंक)</label>
+    <input id="c_pan" inputmode="numeric" maxlength="9">
+    <label for="c_district">जिल्ला</label>
+    <select id="c_district"></select>
+    <label for="c_location">बिलको गन्तव्य स्थान</label>
+    <input id="c_location" placeholder="जिल्ला नै राख्न खाली छोड्नुहोस्">
+    <button class="btn primary" id="custSave">सेभ</button>
+    <button class="btn plain" id="custCancel">रद्द</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- bridge (falls back to localStorage outside the app) ---------- */
+  var App = window.App || {
+    get: function (k) { return localStorage.getItem('vh_' + k) || ''; },
+    put: function (k, v) { localStorage.setItem('vh_' + k, v); },
+    setPassword: function () { localStorage.setItem('vh_pw', '1'); },
+    hasPassword: function () { return !!localStorage.getItem('vh_pw'); },
+    run: function () { alert('Only works inside the app'); },
+    sync: function () { alert('Only works inside the app'); },
+    reprint: function () {}, stop: function () {}, showSite: function () {},
+    openPdf: function () {}, sharePdf: function () {}, pdfExists: function () { return false; }
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var load = function (k, d) { try { var v = App.get(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+  var save = function (k, v) { App.put(k, JSON.stringify(v)); };
+  var money = function (n) { n = Number(n) || 0; return n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+  var uid = function () { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
+
+  var DEFAULT_SETTINGS = {
+    username: '', vehicle: 'KO1CHA7335', driverMobile: '9844010608',
+    deptDistrict: 'MORANG', deptLocation: 'Biratnagar-09',
+    goods: 'Alcohol', unitType: 'कार्टुन',
+    ownPan: '300039166', ownName: 'KAMANA TRADERS', challanDest: 'Mobile Sales-Morang'
+  };
+  var DEFAULT_CUSTOMERS = [
+    { id: 'c1', name: 'रुवि होटल', pan: '622156260', district: 'MORANG', location: '' },
+    { id: 'c2', name: 'Nar Bahadur Hotel', pan: '601572267', district: 'MORANG', location: '' },
+    { id: 'c3', name: 'मुगाछाप होटल', pan: '300756746', district: 'MORANG', location: '' },
+    { id: 'c4', name: 'स्वागतम मदिरा पसल', pan: '603957679', district: 'SUNSARI', location: '' }
+  ];
+  var DEFAULT_DISTRICTS = ('ACHHAM ARGHAKHANCHI BAGLUNG BAITADI BAJHANG BAJURA BANKE BARA BARDIYA BHAKTAPUR BHOJPUR CHITWAN ' +
+    'DADELDHURA DAILEKH DANG DARCHULA DHADING DHANKUTA DHANUSA DOLAKHA DOLPA DOTI GORKHA GULMI HUMLA ILAM JAJARKOT JHAPA ' +
+    'JUMLA KAILALI KALIKOT KANCHANPUR KAPILVASTU KASKI KATHMANDU KAVREPALANCHOK KHOTANG LALITPUR LAMJUNG MAHOTTARI ' +
+    'MAKWANPUR MANANG MORANG MUGU MUSTANG MYAGDI NUWAKOT OKHALDHUNGA PALPA PANCHTHAR PARBAT PARSA PYUTHAN RAMECHHAP ' +
+    'RASUWA RAUTAHAT ROLPA RUPANDEHI SALYAN SANKHUWASABHA SAPTARI SARLAHI SINDHULI SINDHUPALCHOK SIRAHA SOLUKHUMBU ' +
+    'SUNSARI SURKHET SYANGJA TANAHU TAPLEJUNG TEHRATHUM UDAYAPUR').split(' ');
+
+  var S = Object.assign({}, DEFAULT_SETTINGS, load('settings', {}));
+  var C = load('customers', null) || DEFAULT_CUSTOMERS.slice();
+  var H = load('history', []);
+  var D = load('districts', null) || DEFAULT_DISTRICTS;
+  var SYNC = load('sync', null);
+  if (!load('customers', null)) save('customers', C);
+
+  var bills = [];
+  var destTouched = false;
+  var currentJob = null;
+  var running = false;
+
+  /* ---------- navigation ---------- */
+  var go = function (name) {
+    if (running && name !== 'run') { name = 'run'; }
+    Array.prototype.forEach.call(document.querySelectorAll('.screen'), function (s) { s.classList.toggle('on', s.id === 'scr-' + name); });
+    Array.prototype.forEach.call(document.querySelectorAll('nav button'), function (b) {
+      var g = b.getAttribute('data-go');
+      b.classList.toggle('on', g === name || (name === 'review' && g === 'new') || (name === 'run' && g === 'new'));
+    });
+    if (name === 'history') renderHistory();
+    if (name === 'customers') renderCustomers();
+    if (name === 'settings') renderSettings();
+    if (name === 'new') renderNew();
+    window.scrollTo(0, 0);
+  };
+  Array.prototype.forEach.call(document.querySelectorAll('nav button'), function (b) {
+    b.addEventListener('click', function () { go(b.getAttribute('data-go')); });
+  });
+  window.onBack = function () {
+    if ($('custModal').classList.contains('on')) { $('custModal').classList.remove('on'); return true; }
+    if ($('scr-review').classList.contains('on')) { go('new'); return true; }
+    if (!$('scr-new').classList.contains('on') && !running) { go('new'); return true; }
+    return false;
+  };
+
+  var districtOptions = function (sel, value) {
+    var list = D.slice();
+    if (value && list.indexOf(value) < 0) list.unshift(value);
+    sel.innerHTML = list.map(function (d) { return '<option' + (d === value ? ' selected' : '') + '>' + esc(d) + '</option>'; }).join('');
+  };
+  var custById = function (id) { return C.find(function (c) { return c.id === id; }); };
+
+  /* ---------- NEW consignment ---------- */
+  var newBill = function () { return { id: uid(), type: '1', cust: '', no: '', date: '', qty: '', amount: '', dest: '', destTouched: false }; };
+
+  var renderNew = function () {
+    $('hdrSub').textContent = S.ownName ? S.ownName + ' • ' + S.vehicle : 'Consignment छिटो बनाउनुहोस्';
+    var hint = '';
+    if (!S.username || !App.hasPassword()) {
+      hint = '<div class="note warn">पहिले <b>सेटिङ</b> मा VCTS user name र password राख्नुहोस्, अनि “लगइन जाँच” थिच्नुहोस्।</div>';
+    } else if (!SYNC) {
+      hint = '<div class="note info">सेटिङ मा “लगइन जाँच र VCTS sync” एक पटक थिच्नुहोस्।</div>';
+    }
+    $('setupHint').innerHTML = hint;
+    if (!bills.length) bills.push(newBill());
+    var dd = $('destDistrict');
+    var cur = dd.value || autoDistrict() || S.deptDistrict;
+    districtOptions(dd, cur);
+    renderBills();
+  };
+
+  var autoDistrict = function () {
+    for (var i = bills.length - 1; i >= 0; i--) {
+      var b = bills[i];
+      if (b.type === '1' && b.cust) { var c = custById(b.cust); if (c && c.district) return c.district; }
+    }
+    return S.deptDistrict;
+  };
+
+  var billDestDefault = function (b) {
+    if (b.type === '2') return S.challanDest || '';
+    var c = custById(b.cust);
+    if (!c) return '';
+    return c.location || c.district || '';
+  };
+
+  var renderBills = function () {
+    var custOpts = function (sel) {
+      return '<option value="">— ग्राहक छान्नुहोस् —</option>' +
+        C.map(function (c) { return '<option value="' + esc(c.id) + '"' + (c.id === sel ? ' selected' : '') + '>' + esc(c.name) + ' (' + esc(c.pan) + ')</option>'; }).join('') +
+        '<option value="__new">+ नयाँ ग्राहक…</option>';
+    };
+    $('billList').innerHTML = bills.map(function (b, i) {
+      return '<div class="card" data-bill="' + b.id + '">' +
+        '<h3><span>बिल ' + (i + 1) + '</span>' + (bills.length > 1 ? '<button class="link bad" data-act="remove">हटाउनुहोस्</button>' : '') + '</h3>' +
+        '<div class="seg"><button data-act="type1" class="' + (b.type === '1' ? 'on' : '') + '">बिल</button><button data-act="type2" class="' + (b.type === '2' ? 'on' : '') + '">चलान</button></div>' +
+        (b.type === '1'
+          ? '<label>ग्राहक</label><select data-f="cust">' + custOpts(b.cust) + '</select>'
+          : '<div class="muted" style="margin-top:8px">चलान: आफ्नै फर्म (' + esc(S.ownName) + ', ' + esc(S.ownPan) + ')</div>') +
+        '<div class="row"><div><label>' + (b.type === '1' ? 'बिल नं.' : 'चलान नं.') + '</label><input data-f="no" inputmode="numeric" value="' + esc(b.no) + '"></div>' +
+        '<div><label>मिति (खाली = आज)</label><input data-f="date" placeholder="आज" value="' + esc(b.date) + '"></div></div>' +
+        '<div class="row"><div><label>' + esc(S.unitType || 'इकाई') + '</label><input data-f="qty" inputmode="decimal" value="' + esc(b.qty) + '"></div>' +
+        '<div><label>रकम (VAT बाहेक)</label><input data-f="amount" inputmode="decimal" value="' + esc(b.amount) + '"></div></div>' +
+        '<label>बिलको गन्तव्य स्थान</label><input data-f="dest" value="' + esc(b.destTouched ? b.dest : billDestDefault(b)) + '">' +
+        '</div>';
+    }).join('');
+  };
+
+  $('billList').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    var card = btn.closest('[data-bill]');
+    var b = bills.find(function (x) { return x.id === card.getAttribute('data-bill'); });
+    var act = btn.getAttribute('data-act');
+    if (act === 'remove') bills = bills.filter(function (x) { return x !== b; });
+    if (act === 'type1') b.type = '1';
+    if (act === 'type2') b.type = '2';
+    if (!destTouched) $('destDistrict').value = autoDistrict();
+    renderBills();
+  });
+  var onBillInput = function (e) {
+    var el = e.target, f = el.getAttribute('data-f');
+    if (!f) return;
+    var card = el.closest('[data-bill]');
+    var b = bills.find(function (x) { return x.id === card.getAttribute('data-bill'); });
+    el.classList.remove('err');
+    if (f === 'cust') {
+      if (el.value === '__new') { el.value = b.cust; openCustomer(null, function (c) { b.cust = c.id; refreshAfterCust(); }); return; }
+      b.cust = el.value;
+      refreshAfterCust();
+      return;
+    }
+    if (f === 'dest') { b.dest = el.value; b.destTouched = true; return; }
+    b[f] = el.value.trim();
+  };
+  var refreshAfterCust = function () {
+    if (!destTouched) districtOptions($('destDistrict'), autoDistrict());
+    renderBills();
+  };
+  $('billList').addEventListener('change', onBillInput);
+  $('billList').addEventListener('input', function (e) { if (e.target.tagName === 'INPUT') onBillInput(e); });
+  $('destDistrict').addEventListener('change', function () { destTouched = true; });
+  $('addBill').addEventListener('click', function () { bills.push(newBill()); renderBills(); });
+
+  var validate = function () {
+    var errs = [];
+    Array.prototype.forEach.call(document.querySelectorAll('#billList [data-bill]'), function (card, i) {
+      var b = bills[i];
+      var mark = function (f, msg) { var el = card.querySelector('[data-f=' + f + ']'); if (el) el.classList.add('err'); errs.push('बिल ' + (i + 1) + ': ' + msg); };
+      if (b.type === '1' && !custById(b.cust)) mark('cust', 'ग्राहक छान्नुहोस्');
+      if (!/^[1-9][0-9]*$/.test(b.no)) mark('no', 'नम्बर अंकमा मात्र, ० बाट सुरु नहुने');
+      if (b.date && !/^20[0-9]{2}-[01][0-9]-[0-3][0-9]$/.test(b.date)) mark('date', 'मिति 2083-06-20 जस्तो लेख्नुहोस्');
+      if (!(Number(b.qty) > 0)) mark('qty', 'संख्या लेख्नुहोस्');
+      if (!(Number(b.amount) > 0)) mark('amount', 'रकम लेख्नुहोस्');
+    });
+    var nums = {};
+    bills.forEach(function (b, i) { var k = b.type + ':' + b.no; if (b.no && nums[k]) errs.push('बिल ' + (i + 1) + ': एउटै नम्बर दुई पटक'); nums[k] = 1; });
+    if (!S.username || !App.hasPassword()) errs.push('सेटिङ मा user name / password छैन');
+    if (!S.vehicle || !S.driverMobile) errs.push('सेटिङ मा गाडी / चालक छैन');
+    return errs;
+  };
+
+  var buildJob = function () {
+    return {
+      vehicle: S.vehicle.trim().toUpperCase().replace(/\s+/g, ''),
+      driverMobile: S.driverMobile.trim(),
+      deptDistrict: S.deptDistrict.trim(), deptLocation: S.deptLocation.trim(),
+      destDistrict: $('destDistrict').value, destExtra: $('destExtra').value.trim(),
+      bills: bills.map(function (b) {
+        var c = b.type === '1' ? custById(b.cust) : null;
+        return {
+          docType: b.type, docNo: b.no, docDate: b.date,
+          goods: S.goods, unitType: S.unitType,
+          qty: Number(b.qty), amount: Number(b.amount),
+          supplierPan: S.ownPan, supplierName: S.ownName,
+          buyerPan: c ? c.pan : S.ownPan, buyerName: c ? c.name : S.ownName,
+          destLocation: (b.destTouched ? b.dest : billDestDefault(b)) || $('destDistrict').value,
+          remarks: ''
+        };
+      })
+    };
+  };
+
+  $('toReview').addEventListener('click', function () {
+    var errs = validate();
+    if (errs.length) { alert(errs.join('\n')); return; }
+    currentJob = buildJob();
+    var j = currentJob;
+    $('revFixed').innerHTML =
+      '<dt>गाडी</dt><dd>' + esc(j.vehicle) + '</dd>' +
+      '<dt>चालक</dt><dd>' + esc(j.driverMobile) + '</dd>' +
+      '<dt>कहाँबाट</dt><dd>' + esc(j.deptDistrict + ', ' + j.deptLocation) + '</dd>' +
+      '<dt>कहाँसम्म</dt><dd>' + esc(j.destDistrict + (j.destExtra ? ', ' + j.destExtra : '')) + '</dd>' +
+      '<dt>सामान</dt><dd>' + esc(S.goods + ' • ' + S.unitType) + '</dd>' +
+      '<dt>मिति</dt><dd>आज (VCTS अनुसार)</dd>';
+    var tq = 0, ta = 0;
+    $('revBills').innerHTML = '<tr><th>प्रकार / नं.</th><th>खरिदकर्ता</th><th class="num">' + esc(S.unitType) + '</th><th class="num">रकम</th></tr>' +
+      j.bills.map(function (b) {
+        tq += b.qty; ta += b.amount;
+        return '<tr><td>' + (b.docType === '1' ? 'बिल' : 'चलान') + ' ' + esc(b.docNo) + (b.docDate ? '<div class="muted">' + esc(b.docDate) + '</div>' : '') + '</td>' +
+          '<td>' + esc(b.buyerName) + '<div class="muted">' + esc(b.buyerPan) + ' • ' + esc(b.destLocation) + '</div></td>' +
+          '<td class="num">' + esc(b.qty) + '</td><td class="num">' + money(b.amount) + '</td></tr>';
+      }).join('');
+    $('revTotal').textContent = tq + ' ' + S.unitType + ' • Rs ' + money(ta);
+    go('review');
+  });
+  $('backEdit').addEventListener('click', function () { go('new'); });
+
+  /* ---------- RUN ---------- */
+  var steps = {};
+  var startRun = function (dry) {
+    if (!currentJob) return;
+    running = true;
+    steps = {};
+    $('steps').innerHTML = '';
+    $('runResult').innerHTML = '';
+    $('runTitle').textContent = dry ? 'Test: फारम भर्दै (save हुँदैन)…' : 'VCTS मा consignment बनाउँदै…';
+    $('stopRun').style.display = '';
+    $('showSite').style.display = '';
+    go('run');
+    App.run(JSON.stringify(currentJob), !!dry);
+  };
+  $('confirmRun').addEventListener('click', function () { startRun(false); });
+  $('dryRun').addEventListener('click', function () { startRun(true); });
+  $('stopRun').addEventListener('click', function () { if (confirm('रोक्ने हो?')) App.stop(); });
+  $('showSite').addEventListener('click', function () { App.showSite(true); });
+
+  var setStep = function (e) {
+    var li = steps[e.id];
+    if (!li) { li = document.createElement('li'); steps[e.id] = li; $('steps').appendChild(li); }
+    var icon = e.state === 'run' ? '<span class="spin"></span>' : e.state === 'ok' ? '✅' : e.state === 'fail' ? '❌' : '•';
+    li.innerHTML = '<span class="st">' + icon + '</span><span>' + esc(e.label || li.getAttribute('data-label') || '') +
+      (e.detail ? '<div class="d">' + esc(e.detail) + '</div>' : '') + '</span>';
+    if (e.label) li.setAttribute('data-label', e.label);
+  };
+  var finishSteps = function (state) {
+    Object.keys(steps).forEach(function (k) { if (steps[k].querySelector('.spin')) setStep({ id: k, state: state }); });
+  };
+
+  var addHistory = function (h) { H.unshift(h); if (H.length > 300) H.length = 300; save('history', H); };
+
+  var pdfButtons = function (pdf, cid) {
+    return '<div class="actions">' +
+      '<button class="btn primary" data-open="' + esc(pdf) + '">PDF खोल्नुहोस्</button>' +
+      '<button class="btn go" data-share="' + esc(pdf) + '" data-cid="' + esc(cid) + '">Share (WhatsApp)</button></div>';
+  };
+  document.addEventListener('click', function (e) {
+    var o = e.target.closest('[data-open]');
+    if (o) App.openPdf(o.getAttribute('data-open'));
+    var s = e.target.closest('[data-share]');
+    if (s) App.sharePdf(s.getAttribute('data-share'), 'VCTS Consignment ' + s.getAttribute('data-cid'));
+    var r = e.target.closest('[data-reprint]');
+    if (r) {
+      if (running) return;
+      running = true; steps = {}; $('steps').innerHTML = ''; $('runResult').innerHTML = '';
+      $('runTitle').textContent = 'PDF फेरि निकाल्दै…';
+      $('stopRun').style.display = ''; $('showSite').style.display = '';
+      go('run');
+      App.reprint(r.getAttribute('data-reprint'));
+    }
+  });
+
+  window.onEvent = function (e) {
+    if (e.type === 'step') { setStep(e); return; }
+    if (e.type === 'done') {
+      running = false;
+      finishSteps('ok');
+      $('stopRun').style.display = 'none';
+      if (e.mode === 'sync') { onSyncDone(e.info || {}); go('settings'); return; }
+      if (e.mode === 'dry') {
+        $('runTitle').textContent = 'Test सकियो — केही save भएको छैन';
+        $('runResult').innerHTML = '<div class="note ok">VCTS फारम भरियो (पहिलो बिल मात्र)। “VCTS page हेर्नुहोस्” थिचेर हेर्नुहोस्। त्यहाँ Save <b>नथिच्नुहोस्</b> — app मा फर्केपछि फारम आफैं हट्छ।</div>' +
+          '<button class="btn primary" id="dryBack">ठिक छ, फर्कनुहोस्</button>';
+        $('dryBack').onclick = function () { go('review'); };
+        return;
+      }
+      if (e.mode === 'reprint') {
+        $('runTitle').textContent = 'PDF तयार भयो';
+        $('runResult').innerHTML = '<div class="card"><div class="muted">Consignment ID</div><div class="big">' + esc(e.consignmentId) + '</div>' +
+          (e.pdf ? pdfButtons(e.pdf, e.consignmentId) : '<div class="note warn">' + esc(e.message || '') + '</div>') + '</div>';
+        H.forEach(function (h) { if (h.cid === e.consignmentId && e.pdf) h.pdf = e.pdf; });
+        save('history', H);
+        return;
+      }
+      $('runTitle').textContent = 'सकियो ✓';
+      var j = currentJob || { bills: [] };
+      addHistory({ time: Date.now(), cid: e.consignmentId, pdf: e.pdf || '', status: 'ok', bills: j.bills, dest: j.destDistrict });
+      $('runResult').innerHTML = '<div class="card"><div class="muted">Consignment ID</div><div class="big">' + esc(e.consignmentId) + '</div>' +
+        '<div class="muted" style="margin-top:4px">Locked र vehicle started</div>' +
+        (e.pdf ? pdfButtons(e.pdf, e.consignmentId) : '<div class="note warn">' + esc(e.message || 'PDF बनेन — इतिहासबाट फेरि प्रयास गर्नुहोस्।') + '</div>') +
+        '</div><button class="btn plain" id="newAfter">नयाँ consignment</button>';
+      $('newAfter').onclick = function () { bills = []; destTouched = false; $('destExtra').value = ''; currentJob = null; go('new'); };
+      return;
+    }
+    if (e.type === 'error') {
+      running = false;
+      finishSteps('fail');
+      $('stopRun').style.display = 'none';
+      if (e.mode === 'sync') { $('syncResult').innerHTML = '<div class="note bad">' + esc(e.message) + '</div>'; go('settings'); return; }
+      $('runTitle').textContent = e.stopped ? 'रोकियो' : 'समस्या आयो';
+      var msg = '<div class="note bad">' + esc(e.message) + '</div>';
+      if (e.consignmentId) {
+        msg += '<div class="note warn">Consignment <b>' + esc(e.consignmentId) + '</b> VCTS मा बनिसकेको छ। फेरि नबनाउनुहोस् — “VCTS page हेर्नुहोस्” थिचेर बाँकी काम (lock / start / print) त्यहीँ सक्नुहोस्।</div>';
+        if (e.mode === 'real') addHistory({ time: Date.now(), cid: e.consignmentId, pdf: '', status: 'partial', note: e.message, bills: (currentJob || {}).bills || [], dest: (currentJob || {}).destDistrict });
+      } else if (e.mode === 'real' && !e.unknown) {
+        msg += '<div class="muted">VCTS मा केही save भएको छैन। सच्याएर फेरि प्रयास गर्न सक्नुहुन्छ।</div>';
+      } else if (e.unknown) {
+        msg += '<div class="note warn">VCTS ले जवाफ दिएन। फेरि प्रयास गर्नु अघि VCTS को Consignment list हेर्नुहोस्।</div>';
+      }
+      $('runResult').innerHTML = msg + '<button class="btn plain" id="errBack">फर्कनुहोस्</button>';
+      $('errBack').onclick = function () { go(e.consignmentId ? 'history' : 'review'); };
+      return;
+    }
+  };
+
+  /* ---------- HISTORY ---------- */
+  var renderHistory = function () {
+    if (!H.length) { $('histList').innerHTML = '<div class="empty">अहिलेसम्म केही छैन।</div>'; return; }
+    $('histList').innerHTML = H.map(function (h) {
+      var d = new Date(h.time);
+      var tq = 0, ta = 0;
+      (h.bills || []).forEach(function (b) { tq += Number(b.qty) || 0; ta += Number(b.amount) || 0; });
+      var hasPdf = h.pdf && App.pdfExists(h.pdf);
+      return '<div class="card"><div class="list-item"><div>' +
+        '<div style="font-weight:700">' + esc(h.cid || '—') + '</div>' +
+        '<div class="muted">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' • ' + esc(h.dest || '') + '</div>' +
+        '<div class="muted">' + (h.bills || []).map(function (b) { return (b.docType === '1' ? 'बिल ' : 'चलान ') + esc(b.docNo) + ' – ' + esc(b.buyerName); }).join('<br>') + '</div>' +
+        '</div><div style="text-align:right">' +
+        '<span class="chip ' + (h.status === 'ok' ? 'ok' : 'warn') + '">' + (h.status === 'ok' ? 'सकियो' : 'अधुरो') + '</span>' +
+        '<div class="muted" style="margin-top:6px">' + tq + ' • Rs ' + money(ta) + '</div></div></div>' +
+        (h.note ? '<div class="note warn">' + esc(h.note) + '</div>' : '') +
+        '<div class="actions">' +
+        (hasPdf ? '<button class="btn plain" data-open="' + esc(h.pdf) + '">PDF</button><button class="btn plain" data-share="' + esc(h.pdf) + '" data-cid="' + esc(h.cid) + '">Share</button>' : '') +
+        (h.cid ? '<button class="btn ghost" data-reprint="' + esc(h.cid) + '">' + (hasPdf ? 'फेरि PDF' : 'PDF निकाल्नुहोस्') + '</button>' : '') +
+        '</div></div>';
+    }).join('');
+  };
+
+  /* ---------- CUSTOMERS ---------- */
+  var custCb = null, custEditing = null;
+  var openCustomer = function (c, cb) {
+    custEditing = c; custCb = cb || null;
+    $('custTitle').textContent = c ? 'ग्राहक सच्याउनुहोस्' : 'नयाँ ग्राहक';
+    $('c_name').value = c ? c.name : '';
+    $('c_pan').value = c ? c.pan : '';
+    districtOptions($('c_district'), c ? c.district : (S.deptDistrict || 'MORANG'));
+    $('c_location').value = c ? (c.location || '') : '';
+    $('custModal').classList.add('on');
+    setTimeout(function () { $('c_name').focus(); }, 50);
+  };
+  $('custCancel').addEventListener('click', function () { $('custModal').classList.remove('on'); });
+  $('custSave').addEventListener('click', function () {
+    var name = $('c_name').value.trim(), pan = $('c_pan').value.trim();
+    if (!name) { $('c_name').classList.add('err'); return; }
+    if (!/^[0-9]{9}$/.test(pan)) { $('c_pan').classList.add('err'); alert('PAN ९ अंकको हुनुपर्छ'); return; }
+    var c = custEditing || { id: uid() };
+    c.name = name; c.pan = pan; c.district = $('c_district').value; c.location = $('c_location').value.trim();
+    if (!custEditing) C.push(c);
+    save('customers', C);
+    $('custModal').classList.remove('on');
+    if (custCb) custCb(c);
+    renderCustomers();
+  });
+  $('addCust').addEventListener('click', function () { openCustomer(null); });
+  var renderCustomers = function () {
+    if (!C.length) { $('custList').innerHTML = '<div class="empty">ग्राहक छैनन्।</div>'; return; }
+    $('custList').innerHTML = C.map(function (c) {
+      return '<div class="card"><div class="list-item"><div><div style="font-weight:700">' + esc(c.name) + '</div>' +
+        '<div class="muted">PAN ' + esc(c.pan) + ' • ' + esc(c.district) + (c.location ? ' • ' + esc(c.location) : '') + '</div></div>' +
+        '<div><button class="link" data-edit="' + esc(c.id) + '">सच्याउने</button><br><button class="link bad" data-del="' + esc(c.id) + '">हटाउने</button></div></div></div>';
+    }).join('');
+  };
+  $('custList').addEventListener('click', function (e) {
+    var ed = e.target.closest('[data-edit]'), del = e.target.closest('[data-del]');
+    if (ed) openCustomer(custById(ed.getAttribute('data-edit')));
+    if (del) {
+      var c = custById(del.getAttribute('data-del'));
+      if (c && confirm(c.name + ' हटाउने हो?')) { C = C.filter(function (x) { return x !== c; }); save('customers', C); renderCustomers(); }
+    }
+  });
+
+  /* ---------- SETTINGS ---------- */
+  var FIELDS = ['username', 'vehicle', 'driverMobile', 'deptDistrict', 'deptLocation', 'goods', 'unitType', 'ownPan', 'ownName', 'challanDest'];
+  var renderSettings = function () {
+    FIELDS.forEach(function (f) { $('s_' + f).value = S[f] || ''; });
+    $('s_password').value = '';
+    var has = App.hasPassword();
+    $('s_password').placeholder = has ? '•••••••• (सेभ भइसकेको)' : 'VCTS password';
+    $('pwState').textContent = has ? 'Password यो फोनमा मात्र, encrypt गरेर राखिएको छ।' : '';
+    if (SYNC && !$('syncResult').innerHTML) showSync(SYNC);
+  };
+  var saveSettings = function () {
+    FIELDS.forEach(function (f) { S[f] = $('s_' + f).value.trim(); });
+    S.vehicle = S.vehicle.toUpperCase().replace(/\s+/g, '');
+    S.deptDistrict = S.deptDistrict.toUpperCase();
+    save('settings', S);
+    var pw = $('s_password').value;
+    if (pw) { App.setPassword(pw); $('s_password').value = ''; }
+    renderSettings();
+  };
+  $('saveSettings').addEventListener('click', function () {
+    saveSettings();
+    $('syncResult').innerHTML = '<div class="note ok">सेभ भयो ✓</div>';
+  });
+  $('syncBtn').addEventListener('click', function () {
+    saveSettings();
+    if (!S.username || !App.hasPassword()) { $('syncResult').innerHTML = '<div class="note bad">User name र password राख्नुहोस्।</div>'; return; }
+    running = true; steps = {}; $('steps').innerHTML = ''; $('runResult').innerHTML = '';
+    $('runTitle').textContent = 'VCTS लगइन जाँच्दै…';
+    $('stopRun').style.display = ''; $('showSite').style.display = '';
+    go('run');
+    App.sync(JSON.stringify({ driverMobile: S.driverMobile }));
+  });
+  var showSync = function (info) {
+    var drv = info.driver || {};
+    $('syncResult').innerHTML = '<div class="note ' + (drv.ok === false ? 'warn' : 'ok') + '">' +
+      '✓ लगइन भयो: <b>' + esc(info.company || '') + '</b> (PAN ' + esc(info.pan || '') + ')<br>' +
+      'VCTS को आजको मिति: ' + esc(info.today || '?') + '<br>' +
+      (drv.ok ? 'चालक भेटियो: ' + esc(drv.name || '') : 'चालक भेटिएन: ' + esc(drv.msg || S.driverMobile)) + '<br>' +
+      'जिल्ला सूची: ' + ((info.districts || []).length || D.length) + '</div>';
+  };
+  var onSyncDone = function (info) {
+    if (info.districts && info.districts.length) { D = info.districts; save('districts', D); }
+    SYNC = { company: info.company, pan: info.pan, today: info.today, docFrom: info.docFrom, docTo: info.docTo, driver: info.driver, districts: info.districts, time: Date.now() };
+    save('sync', SYNC);
+    showSync(SYNC);
+  };
+
+  renderNew();
+})();
+</script>
+</body>
+</html>
