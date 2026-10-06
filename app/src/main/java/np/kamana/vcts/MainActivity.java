@@ -175,32 +175,34 @@ public class MainActivity extends Activity {
         return ui.getVisibility() != View.VISIBLE;
     }
 
-    void openPdf(String path) {
+    /** Opens a saved PDF or photo in the phone's viewer. */
+    void openFile(String path) {
         File f = new File(path);
         if (!f.exists()) {
-            Toast.makeText(this, "PDF भेटिएन", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "फाइल भेटिएन", Toast.LENGTH_SHORT).show();
             return;
         }
         Uri uri = PdfProvider.uriFor(this, f);
         Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setDataAndType(uri, "application/pdf");
+        i.setDataAndType(uri, PdfProvider.mimeOf(f.getName()));
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
-            startActivity(Intent.createChooser(i, "PDF खोल्नुहोस्"));
+            startActivity(Intent.createChooser(i, "खोल्नुहोस्"));
         } catch (Exception e) {
-            Toast.makeText(this, "PDF खोल्ने app छैन", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "यो फाइल खोल्ने app छैन", Toast.LENGTH_LONG).show();
         }
     }
 
-    void sharePdf(String path, String text) {
+    /** Shares a saved PDF or photo (WhatsApp etc.). */
+    void shareFile(String path, String text) {
         File f = new File(path);
         if (!f.exists()) {
-            Toast.makeText(this, "PDF भेटिएन", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "फाइल भेटिएन", Toast.LENGTH_SHORT).show();
             return;
         }
         Uri uri = PdfProvider.uriFor(this, f);
         Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("application/pdf");
+        i.setType(PdfProvider.mimeOf(f.getName()));
         i.putExtra(Intent.EXTRA_STREAM, uri);
         if (text != null && !text.isEmpty()) i.putExtra(Intent.EXTRA_TEXT, text);
         i.setClipData(ClipData.newRawUri(f.getName(), uri));
@@ -283,17 +285,17 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
-        public void openPdf(String path) {
-            runOnUiThread(() -> MainActivity.this.openPdf(path));
+        public void openFile(String path) {
+            runOnUiThread(() -> MainActivity.this.openFile(path));
         }
 
         @JavascriptInterface
-        public void sharePdf(String path, String text) {
-            runOnUiThread(() -> MainActivity.this.sharePdf(path, text));
+        public void shareFile(String path, String text) {
+            runOnUiThread(() -> MainActivity.this.shareFile(path, text));
         }
 
         @JavascriptInterface
-        public boolean pdfExists(String path) {
+        public boolean fileExists(String path) {
             return path != null && !path.isEmpty() && new File(path).exists();
         }
     }

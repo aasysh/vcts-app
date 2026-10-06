@@ -2,7 +2,13 @@ package np.kamana.vcts;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -20,9 +26,12 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -183,18 +192,30 @@ final class Runner {
             JSONObject start = jsObj("__vh.start(" + JSONObject.quote(consignmentId) + ")", 90000);
             ok("start", start.optBoolean("already") ? "पहिले नै started" : start.optString("message"));
 
-            step("pdf", "PDF बनाउँदै");
-            File pdf = printToPdf(consignmentId);
-            ok("pdf", pdf != null ? pdf.getName() : "फोनको print screen बाट “Save as PDF” छान्नुहोस्");
-
+            step("pdf", "PDF र फोटो (JPEG) बनाउँदै");
             JSONObject d = new JSONObject();
             d.put("type", "done");
             d.put("mode", "real");
             d.put("consignmentId", consignmentId);
-            d.put("pdf", pdf != null ? pdf.getAbsolutePath() : "");
-            if (pdf == null) d.put("message", "PDF आफैं save हुन सकेन — print screen खुलेको छ, त्यहाँ “Save as PDF” छान्नुहोस्।");
+            makeOutputs(consignmentId, d);
             act.emit(d);
         });
+    }
+
+    /** Saves the print page as PDF, then as a JPEG photo (also copied to the Gallery). Fills pdf/jpg/gallery/message. */
+    private void makeOutputs(String cid, JSONObject d) throws Exception {
+        File pdf = printToPdf(cid);
+        File jpg = pdf != null ? pdfToJpeg(pdf, cid) : null;
+        boolean gallery = jpg != null && copyToGallery(jpg);
+        d.put("pdf", pdf != null ? pdf.getAbsolutePath() : "");
+        d.put("jpg", jpg != null ? jpg.getAbsolutePath() : "");
+        d.put("gallery", gallery);
+        if (pdf == null) {
+            d.put("message", "PDF आफैं save हुन सकेन — print screen खुलेको छ, त्यहाँ “Save as PDF” छान्नुहोस्।");
+            ok("pdf", "print screen बाट “Save as PDF” छान्नुहोस्");
+        } else {
+            ok("pdf", jpg != null ? (gallery ? "Gallery को VCTS album मा फोटो save भयो" : "फोटो तयार") : "PDF तयार (फोटो बनेन)");
+        }
     }
 
     void sync(String json) {
@@ -222,15 +243,12 @@ final class Runner {
             step("login", "VCTS मा लगइन");
             ensureLogin();
             ok("login", null);
-            step("pdf", "PDF बनाउँदै");
-            File pdf = printToPdf(cid);
-            ok("pdf", pdf != null ? pdf.getName() : "print screen बाट save गर्नुहोस्");
+            step("pdf", "PDF र फोटो (JPEG) बनाउँदै");
             JSONObject d = new JSONObject();
             d.put("type", "done");
             d.put("mode", "reprint");
             d.put("consignmentId", cid);
-            d.put("pdf", pdf != null ? pdf.getAbsolutePath() : "");
-            if (pdf == null) d.put("message", "Print screen मा “Save as PDF” छान्नुहोस्।");
+            makeOutputs(cid, d);
             act.emit(d);
         });
     }
@@ -543,6 +561,106 @@ final class Runner {
                 while ((n = is.read(buf)) > 0) os.write(buf, 0, n);
             }
         } catch (Exception ignored) {
+        }
+    }
+
+    /** Renders the saved PDF into one JPEG (pages stacked, empty bottom trimmed). */
+    private File pdfToJpeg(File pdf, String cid) {
+        final int width = 1400;
+        final int gap = 24;
+        List<Bitmap> pages = new ArrayList<>();
+        try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY);
+             PdfRenderer renderer = new PdfRenderer(fd)) {
+            int n = Math.min(renderer.getPageCount(), 6);
+            for (int i = 0; i < n; i++) {
+                try (PdfRenderer.Page page = renderer.openPage(i)) {
+                    int h = Math.round(page.getHeight() * (width / (float) page.getWidth()));
+                    Bitmap bm = Bitmap.createBitmap(width, h, Bitmap.Config.ARGB_8888);
+                    bm.eraseColor(Color.WHITE);
+                    page.render(bm, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+                    int used = contentBottom(bm);
+                    if (used <= 0) {
+                        bm.recycle();
+                        continue;
+                    }
+                    if (used < h) {
+                        Bitmap cut = Bitmap.createBitmap(bm, 0, 0, width, used);
+                        bm.recycle();
+                        bm = cut;
+                    }
+                    pages.add(bm);
+                }
+            }
+            if (pages.isEmpty()) return null;
+            int total = 0;
+            for (Bitmap b : pages) total += b.getHeight();
+            total += gap * (pages.size() - 1);
+            Bitmap out = Bitmap.createBitmap(width, total, Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(out);
+            c.drawColor(Color.WHITE);
+            Paint line = new Paint();
+            line.setColor(0xFFCCCCCC);
+            int y = 0;
+            for (int i = 0; i < pages.size(); i++) {
+                Bitmap b = pages.get(i);
+                c.drawBitmap(b, 0, y, null);
+                y += b.getHeight();
+                if (i < pages.size() - 1) {
+                    c.drawRect(0, y + gap / 2f - 1, width, y + gap / 2f + 1, line);
+                    y += gap;
+                }
+            }
+            File dir = new File(act.getFilesDir(), "jpg");
+            if (!dir.exists() && !dir.mkdirs()) return null;
+            File f = new File(dir, "VCTS_" + cid + ".jpg");
+            try (FileOutputStream os = new FileOutputStream(f)) {
+                out.compress(Bitmap.CompressFormat.JPEG, 92, os);
+            }
+            out.recycle();
+            return f.length() > 0 ? f : null;
+        } catch (Throwable t) {
+            return null;
+        } finally {
+            for (Bitmap b : pages) if (!b.isRecycled()) b.recycle();
+        }
+    }
+
+    /** Height of the page that has something on it, plus a small margin. */
+    private static int contentBottom(Bitmap bm) {
+        int w = bm.getWidth(), h = bm.getHeight();
+        int[] row = new int[w];
+        for (int y = h - 1; y >= 0; y--) {
+            bm.getPixels(row, 0, w, 0, y, w, 1);
+            for (int x = 0; x < w; x += 2) {
+                int p = row[x];
+                if (((p >> 16) & 0xff) < 235 || ((p >> 8) & 0xff) < 235 || (p & 0xff) < 235) {
+                    return Math.min(h, y + 48);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /** Copies the photo into Pictures/VCTS so it shows in the Gallery (Android 10 and newer). */
+    private boolean copyToGallery(File f) {
+        if (Build.VERSION.SDK_INT < 29) return false;
+        try {
+            ContentResolver cr = act.getContentResolver();
+            ContentValues v = new ContentValues();
+            v.put(MediaStore.MediaColumns.DISPLAY_NAME, f.getName());
+            v.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+            v.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/VCTS");
+            Uri uri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, v);
+            if (uri == null) return false;
+            try (OutputStream os = cr.openOutputStream(uri); InputStream is = new FileInputStream(f)) {
+                if (os == null) return false;
+                byte[] buf = new byte[16384];
+                int n;
+                while ((n = is.read(buf)) > 0) os.write(buf, 0, n);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 

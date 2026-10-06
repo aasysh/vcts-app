@@ -78,6 +78,7 @@
   .sheet { background: #fff; width: 100%; max-width: 640px; margin: 0 auto; border-radius: 18px 18px 0 0; padding: 16px 16px 22px; max-height: 92vh; overflow: auto; }
   .sheet h3 { margin: 0 0 6px; }
   .empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+  img.shot { display: block; width: 100%; margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
 </style>
 </head>
 <body>
@@ -219,7 +220,7 @@
     run: function () { alert('Only works inside the app'); },
     sync: function () { alert('Only works inside the app'); },
     reprint: function () {}, stop: function () {}, showSite: function () {},
-    openPdf: function () {}, sharePdf: function () {}, pdfExists: function () { return false; }
+    openFile: function () {}, shareFile: function () {}, fileExists: function () { return false; }
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -508,16 +509,24 @@
 
   var addHistory = function (h) { H.unshift(h); if (H.length > 300) H.length = 300; save('history', H); };
 
-  var pdfButtons = function (pdf, cid) {
-    return '<div class="actions">' +
-      '<button class="btn primary" data-open="' + esc(pdf) + '">PDF खोल्नुहोस्</button>' +
-      '<button class="btn go" data-share="' + esc(pdf) + '" data-cid="' + esc(cid) + '">Share (WhatsApp)</button></div>';
+  var outputBlock = function (e) {
+    var h = '';
+    if (e.jpg) {
+      h += '<img class="shot" src="file://' + esc(e.jpg) + '?t=' + Date.now() + '" alt="" data-open="' + esc(e.jpg) + '" onerror="this.style.display=\'none\'">';
+      h += '<div class="actions"><button class="btn go" data-share="' + esc(e.jpg) + '" data-cid="' + esc(e.consignmentId) + '">फोटो Share (WhatsApp)</button></div>';
+      if (e.gallery) h += '<div class="muted" style="margin-top:8px">फोटो Gallery को <b>VCTS</b> album मा पनि save भयो।</div>';
+    }
+    if (e.pdf) {
+      h += '<div class="actions"><button class="btn plain" data-open="' + esc(e.pdf) + '">PDF खोल्नुहोस्</button>' +
+        '<button class="btn plain" data-share="' + esc(e.pdf) + '" data-cid="' + esc(e.consignmentId) + '">PDF Share</button></div>';
+    }
+    return h;
   };
   document.addEventListener('click', function (e) {
     var o = e.target.closest('[data-open]');
-    if (o) App.openPdf(o.getAttribute('data-open'));
+    if (o) App.openFile(o.getAttribute('data-open'));
     var s = e.target.closest('[data-share]');
-    if (s) App.sharePdf(s.getAttribute('data-share'), 'VCTS Consignment ' + s.getAttribute('data-cid'));
+    if (s) App.shareFile(s.getAttribute('data-share'), 'VCTS Consignment ' + s.getAttribute('data-cid'));
     var r = e.target.closest('[data-reprint]');
     if (r) {
       if (running) return;
@@ -546,17 +555,17 @@
       if (e.mode === 'reprint') {
         $('runTitle').textContent = 'PDF तयार भयो';
         $('runResult').innerHTML = '<div class="card"><div class="muted">Consignment ID</div><div class="big">' + esc(e.consignmentId) + '</div>' +
-          (e.pdf ? pdfButtons(e.pdf, e.consignmentId) : '<div class="note warn">' + esc(e.message || '') + '</div>') + '</div>';
-        H.forEach(function (h) { if (h.cid === e.consignmentId && e.pdf) h.pdf = e.pdf; });
+          (e.pdf ? outputBlock(e) : '<div class="note warn">' + esc(e.message || '') + '</div>') + '</div>';
+        H.forEach(function (h) { if (h.cid === e.consignmentId && e.pdf) { h.pdf = e.pdf; h.jpg = e.jpg || ''; } });
         save('history', H);
         return;
       }
       $('runTitle').textContent = 'सकियो ✓';
       var j = currentJob || { bills: [] };
-      addHistory({ time: Date.now(), cid: e.consignmentId, pdf: e.pdf || '', status: 'ok', bills: j.bills, dest: j.destDistrict });
+      addHistory({ time: Date.now(), cid: e.consignmentId, pdf: e.pdf || '', jpg: e.jpg || '', status: 'ok', bills: j.bills, dest: j.destDistrict });
       $('runResult').innerHTML = '<div class="card"><div class="muted">Consignment ID</div><div class="big">' + esc(e.consignmentId) + '</div>' +
         '<div class="muted" style="margin-top:4px">Locked र vehicle started</div>' +
-        (e.pdf ? pdfButtons(e.pdf, e.consignmentId) : '<div class="note warn">' + esc(e.message || 'PDF बनेन — इतिहासबाट फेरि प्रयास गर्नुहोस्।') + '</div>') +
+        (e.pdf ? outputBlock(e) : '<div class="note warn">' + esc(e.message || 'PDF बनेन — इतिहासबाट फेरि प्रयास गर्नुहोस्।') + '</div>') +
         '</div><button class="btn plain" id="newAfter">नयाँ consignment</button>';
       $('newAfter').onclick = function () { bills = []; destTouched = false; $('destExtra').value = ''; currentJob = null; go('new'); };
       return;
@@ -589,7 +598,8 @@
       var d = new Date(h.time);
       var tq = 0, ta = 0;
       (h.bills || []).forEach(function (b) { tq += Number(b.qty) || 0; ta += Number(b.amount) || 0; });
-      var hasPdf = h.pdf && App.pdfExists(h.pdf);
+      var hasPdf = h.pdf && App.fileExists(h.pdf);
+      var hasJpg = h.jpg && App.fileExists(h.jpg);
       return '<div class="card"><div class="list-item"><div>' +
         '<div style="font-weight:700">' + esc(h.cid || '—') + '</div>' +
         '<div class="muted">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' • ' + esc(h.dest || '') + '</div>' +
@@ -599,8 +609,9 @@
         '<div class="muted" style="margin-top:6px">' + tq + ' • Rs ' + money(ta) + '</div></div></div>' +
         (h.note ? '<div class="note warn">' + esc(h.note) + '</div>' : '') +
         '<div class="actions">' +
-        (hasPdf ? '<button class="btn plain" data-open="' + esc(h.pdf) + '">PDF</button><button class="btn plain" data-share="' + esc(h.pdf) + '" data-cid="' + esc(h.cid) + '">Share</button>' : '') +
-        (h.cid ? '<button class="btn ghost" data-reprint="' + esc(h.cid) + '">' + (hasPdf ? 'फेरि PDF' : 'PDF निकाल्नुहोस्') + '</button>' : '') +
+        (hasJpg ? '<button class="btn go" data-share="' + esc(h.jpg) + '" data-cid="' + esc(h.cid) + '">फोटो Share</button><button class="btn plain" data-open="' + esc(h.jpg) + '">फोटो</button>' : '') +
+        (hasPdf ? '<button class="btn plain" data-open="' + esc(h.pdf) + '">PDF</button>' : '') +
+        (h.cid ? '<button class="btn ghost" data-reprint="' + esc(h.cid) + '">' + (hasPdf && hasJpg ? 'फेरि निकाल्नुहोस्' : 'PDF / फोटो निकाल्नुहोस्') + '</button>' : '') +
         '</div></div>';
     }).join('');
   };

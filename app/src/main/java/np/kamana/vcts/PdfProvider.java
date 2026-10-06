@@ -12,17 +12,24 @@ import android.provider.OpenableColumns;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-/** Lets PDF viewers and WhatsApp read the saved consignment PDFs (read-only). */
+/** Lets viewers and WhatsApp read the saved consignment PDFs and photos (read-only). */
 public class PdfProvider extends ContentProvider {
 
     static Uri uriFor(Context c, File f) {
-        return Uri.parse("content://" + c.getPackageName() + ".files/pdf/" + Uri.encode(f.getName()));
+        return Uri.parse("content://" + c.getPackageName() + ".files/" + f.getParentFile().getName() + "/" + Uri.encode(f.getName()));
+    }
+
+    static String mimeOf(String name) {
+        return name != null && name.toLowerCase().endsWith(".jpg") ? "image/jpeg" : "application/pdf";
     }
 
     private File fileFor(Uri uri) {
-        String name = uri.getLastPathSegment();
-        if (name == null || name.contains("/") || name.contains("..") || getContext() == null) return null;
-        File f = new File(new File(getContext().getFilesDir(), "pdf"), name);
+        java.util.List<String> seg = uri.getPathSegments();
+        if (seg == null || seg.size() != 2 || getContext() == null) return null;
+        String dir = seg.get(0), name = seg.get(1);
+        if (!("pdf".equals(dir) || "jpg".equals(dir))) return null;
+        if (name.contains("/") || name.contains("..")) return null;
+        File f = new File(new File(getContext().getFilesDir(), dir), name);
         return f.exists() ? f : null;
     }
 
@@ -40,7 +47,7 @@ public class PdfProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        return "application/pdf";
+        return mimeOf(uri.getLastPathSegment());
     }
 
     @Override
