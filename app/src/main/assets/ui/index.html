@@ -93,8 +93,9 @@
     <div id="setupHint"></div>
     <div class="card">
       <h3>गन्तव्य (Destination)</h3>
-      <label for="destDistrict">जिल्ला (District)</label>
-      <select id="destDistrict"></select>
+      <label>जिल्ला (District)</label>
+      <input type="hidden" id="destDistrict">
+      <div class="seg" id="destSeg"></div>
       <label for="destExtra">स्थान थप (optional)</label>
       <input id="destExtra" placeholder="खाली छोड्न सकिन्छ">
     </div>
@@ -297,8 +298,10 @@
     return false;
   };
 
+  // Goods only go to these districts.
+  var DEST_DISTRICTS = ['MORANG', 'SUNSARI'];
   var districtOptions = function (sel, value) {
-    var list = D.slice();
+    var list = DEST_DISTRICTS.slice();
     if (value && list.indexOf(value) < 0) list.unshift(value);
     sel.innerHTML = list.map(function (d) { return '<option' + (d === value ? ' selected' : '') + '>' + esc(d) + '</option>'; }).join('');
   };
@@ -317,11 +320,24 @@
     }
     $('setupHint').innerHTML = hint;
     if (!bills.length) bills.push(newBill());
-    var dd = $('destDistrict');
-    var cur = dd.value || autoDistrict() || S.deptDistrict;
-    districtOptions(dd, cur);
+    setDest($('destDistrict').value || autoDistrict() || DEST_DISTRICTS[0]);
     renderBills();
   };
+
+  var setDest = function (v) {
+    $('destDistrict').value = v;
+    var list = DEST_DISTRICTS.slice();
+    if (v && list.indexOf(v) < 0) list.push(v);
+    $('destSeg').innerHTML = list.map(function (d) {
+      return '<button data-dest="' + esc(d) + '" class="' + (d === v ? 'on' : '') + '">' + esc(d) + '</button>';
+    }).join('');
+  };
+  $('destSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-dest]');
+    if (!b) return;
+    destTouched = true;
+    setDest(b.getAttribute('data-dest'));
+  });
 
   var autoDistrict = function () {
     for (var i = bills.length - 1; i >= 0; i--) {
@@ -383,7 +399,7 @@
     if (act === 'type1') b.type = '1';
     if (act === 'type2') b.type = '2';
     if (act.indexOf('sup') === 0) b.sup = Number(act.slice(3)) || 0;
-    if (!destTouched) $('destDistrict').value = autoDistrict();
+    if (!destTouched) setDest(autoDistrict());
     renderBills();
   });
   var onBillInput = function (e) {
@@ -403,12 +419,11 @@
     b[f] = el.value.trim();
   };
   var refreshAfterCust = function () {
-    if (!destTouched) districtOptions($('destDistrict'), autoDistrict());
+    if (!destTouched) setDest(autoDistrict());
     renderBills();
   };
   $('billList').addEventListener('change', onBillInput);
   $('billList').addEventListener('input', function (e) { if (e.target.tagName === 'INPUT') onBillInput(e); });
-  $('destDistrict').addEventListener('change', function () { destTouched = true; });
   $('addBill').addEventListener('click', function () { bills.push(newBill()); renderBills(); });
 
   var validate = function () {
@@ -570,7 +585,7 @@
         '<div class="muted" style="margin-top:4px">Locked र vehicle started</div>' +
         (e.pdf ? outputBlock(e) : '<div class="note warn">' + esc(e.message || 'PDF बनेन — इतिहासबाट फेरि प्रयास गर्नुहोस्।') + '</div>') +
         '</div><button class="btn plain" id="newAfter">नयाँ consignment</button>';
-      $('newAfter').onclick = function () { bills = []; destTouched = false; $('destExtra').value = ''; currentJob = null; go('new'); };
+      $('newAfter').onclick = function () { bills = []; destTouched = false; $('destExtra').value = ''; $('destDistrict').value = ''; currentJob = null; go('new'); };
       return;
     }
     if (e.type === 'error') {
