@@ -169,11 +169,10 @@
       </div>
     </div>
     <div class="card">
-      <h3>तपाईंको फर्म</h3>
-      <div class="row">
-        <div><label for="s_ownPan">PAN</label><input id="s_ownPan" inputmode="numeric"></div>
-        <div><label for="s_ownName">नाम</label><input id="s_ownName"></div>
-      </div>
+      <h3>बिक्रेता (Supplier)</h3>
+      <div class="muted">पहिलो नाम नयाँ बिलमा आफैं छानिन्छ।</div>
+      <div id="supList"></div>
+      <button class="link" id="addSup">+ अर्को बिक्रेता</button>
       <label for="s_challanDest">चलानको गन्तव्य स्थान</label>
       <input id="s_challanDest">
     </div>
@@ -234,7 +233,8 @@
     username: '', vehicle: 'KO1CHA7335', driverMobile: '9844010608',
     deptDistrict: 'MORANG', deptLocation: 'Biratnagar-09',
     goods: 'Alcohol', unitType: 'कार्टुन',
-    ownPan: '300039166', ownName: 'KAMANA TRADERS', challanDest: 'Mobile Sales-Morang'
+    ownPan: '300039166', ownName: 'KAMANA TRADERS', challanDest: 'Mobile Sales-Morang',
+    suppliers: [{ name: 'KAMANA TRADERS', pan: '300039166' }, { name: 'DANGAL TRADERS', pan: '107353065' }]
   };
   var DEFAULT_CUSTOMERS = [
     { id: 'c1', name: 'रुवि होटल', pan: '622156260', district: 'MORANG', location: '' },
@@ -250,6 +250,15 @@
     'SUNSARI SURKHET SYANGJA TANAHU TAPLEJUNG TEHRATHUM UDAYAPUR').split(' ');
 
   var S = Object.assign({}, DEFAULT_SETTINGS, load('settings', {}));
+  // Older settings had a single firm; keep it first and add Dangal Traders after it.
+  if (!S.suppliers || !S.suppliers.length) {
+    S.suppliers = [{ name: S.ownName || 'KAMANA TRADERS', pan: S.ownPan || '300039166' }];
+  }
+  if (!S.suppliers.some(function (s) { return s.pan === '107353065'; }) && !S.dangalAdded) {
+    S.suppliers.push({ name: 'DANGAL TRADERS', pan: '107353065' });
+  }
+  S.dangalAdded = true;
+  var sup = function (i) { return S.suppliers[i] || S.suppliers[0]; };
   var C = load('customers', null) || DEFAULT_CUSTOMERS.slice();
   var H = load('history', []);
   var D = load('districts', null) || DEFAULT_DISTRICTS;
@@ -293,10 +302,10 @@
   var custById = function (id) { return C.find(function (c) { return c.id === id; }); };
 
   /* ---------- NEW consignment ---------- */
-  var newBill = function () { return { id: uid(), type: '1', cust: '', no: '', date: '', qty: '', amount: '', dest: '', destTouched: false }; };
+  var newBill = function () { return { id: uid(), type: '1', sup: 0, cust: '', no: '', date: '', qty: '', amount: '', dest: '', destTouched: false }; };
 
   var renderNew = function () {
-    $('hdrSub').textContent = S.ownName ? S.ownName + ' • ' + S.vehicle : 'Consignment छिटो बनाउनुहोस्';
+    $('hdrSub').textContent = sup(0).name ? sup(0).name + ' • ' + S.vehicle : 'Consignment छिटो बनाउनुहोस्';
     var hint = '';
     if (!S.username || !App.hasPassword()) {
       hint = '<div class="note warn">पहिले <b>सेटिङ</b> मा VCTS user name र password राख्नुहोस्, अनि “लगइन जाँच” थिच्नुहोस्।</div>';
@@ -332,13 +341,26 @@
         C.map(function (c) { return '<option value="' + esc(c.id) + '"' + (c.id === sel ? ' selected' : '') + '>' + esc(c.name) + ' (' + esc(c.pan) + ')</option>'; }).join('') +
         '<option value="__new">+ नयाँ ग्राहक…</option>';
     };
+    var supControl = function (b) {
+      if (S.suppliers.length < 2) return '';
+      if (S.suppliers.length <= 3) {
+        return '<label>बिक्रेता (Supplier)</label><div class="seg">' + S.suppliers.map(function (s, k) {
+          return '<button data-act="sup' + k + '" class="' + (b.sup === k ? 'on' : '') + '">' + esc(s.name) + '</button>';
+        }).join('') + '</div>';
+      }
+      return '<label>बिक्रेता (Supplier)</label><select data-f="sup">' + S.suppliers.map(function (s, k) {
+        return '<option value="' + k + '"' + (b.sup === k ? ' selected' : '') + '>' + esc(s.name) + ' (' + esc(s.pan) + ')</option>';
+      }).join('') + '</select>';
+    };
     $('billList').innerHTML = bills.map(function (b, i) {
+      if (!S.suppliers[b.sup]) b.sup = 0;
       return '<div class="card" data-bill="' + b.id + '">' +
         '<h3><span>बिल ' + (i + 1) + '</span>' + (bills.length > 1 ? '<button class="link bad" data-act="remove">हटाउनुहोस्</button>' : '') + '</h3>' +
         '<div class="seg"><button data-act="type1" class="' + (b.type === '1' ? 'on' : '') + '">बिल</button><button data-act="type2" class="' + (b.type === '2' ? 'on' : '') + '">चलान</button></div>' +
+        supControl(b) +
         (b.type === '1'
           ? '<label>ग्राहक</label><select data-f="cust">' + custOpts(b.cust) + '</select>'
-          : '<div class="muted" style="margin-top:8px">चलान: आफ्नै फर्म (' + esc(S.ownName) + ', ' + esc(S.ownPan) + ')</div>') +
+          : '<div class="muted" style="margin-top:8px">चलान: ' + esc(sup(b.sup).name) + ' बाट ' + esc(sup(b.sup).name) + ' कै शाखामा (PAN ' + esc(sup(b.sup).pan) + ')</div>') +
         '<div class="row"><div><label>' + (b.type === '1' ? 'बिल नं.' : 'चलान नं.') + '</label><input data-f="no" inputmode="numeric" value="' + esc(b.no) + '"></div>' +
         '<div><label>मिति (खाली = आज)</label><input data-f="date" placeholder="आज" value="' + esc(b.date) + '"></div></div>' +
         '<div class="row"><div><label>' + esc(S.unitType || 'इकाई') + '</label><input data-f="qty" inputmode="decimal" value="' + esc(b.qty) + '"></div>' +
@@ -357,6 +379,7 @@
     if (act === 'remove') bills = bills.filter(function (x) { return x !== b; });
     if (act === 'type1') b.type = '1';
     if (act === 'type2') b.type = '2';
+    if (act.indexOf('sup') === 0) b.sup = Number(act.slice(3)) || 0;
     if (!destTouched) $('destDistrict').value = autoDistrict();
     renderBills();
   });
@@ -373,6 +396,7 @@
       return;
     }
     if (f === 'dest') { b.dest = el.value; b.destTouched = true; return; }
+    if (f === 'sup') { b.sup = Number(el.value) || 0; renderBills(); return; }
     b[f] = el.value.trim();
   };
   var refreshAfterCust = function () {
@@ -399,6 +423,7 @@
     bills.forEach(function (b, i) { var k = b.type + ':' + b.no; if (b.no && nums[k]) errs.push('बिल ' + (i + 1) + ': एउटै नम्बर दुई पटक'); nums[k] = 1; });
     if (!S.username || !App.hasPassword()) errs.push('सेटिङ मा user name / password छैन');
     if (!S.vehicle || !S.driverMobile) errs.push('सेटिङ मा गाडी / चालक छैन');
+    if (S.suppliers.some(function (s) { return !s.name || !/^[0-9]{9}$/.test(s.pan); })) errs.push('सेटिङ मा बिक्रेताको नाम / PAN मिलेन');
     return errs;
   };
 
@@ -410,12 +435,13 @@
       destDistrict: $('destDistrict').value, destExtra: $('destExtra').value.trim(),
       bills: bills.map(function (b) {
         var c = b.type === '1' ? custById(b.cust) : null;
+        var s = sup(b.sup);
         return {
           docType: b.type, docNo: b.no, docDate: b.date,
           goods: S.goods, unitType: S.unitType,
           qty: Number(b.qty), amount: Number(b.amount),
-          supplierPan: S.ownPan, supplierName: S.ownName,
-          buyerPan: c ? c.pan : S.ownPan, buyerName: c ? c.name : S.ownName,
+          supplierPan: s.pan, supplierName: s.name, supplierIsDefault: b.sup === 0,
+          buyerPan: c ? c.pan : s.pan, buyerName: c ? c.name : s.name,
           destLocation: (b.destTouched ? b.dest : billDestDefault(b)) || $('destDistrict').value,
           remarks: ''
         };
@@ -440,7 +466,8 @@
       j.bills.map(function (b) {
         tq += b.qty; ta += b.amount;
         return '<tr><td>' + (b.docType === '1' ? 'बिल' : 'चलान') + ' ' + esc(b.docNo) + (b.docDate ? '<div class="muted">' + esc(b.docDate) + '</div>' : '') + '</td>' +
-          '<td>' + esc(b.buyerName) + '<div class="muted">' + esc(b.buyerPan) + ' • ' + esc(b.destLocation) + '</div></td>' +
+          '<td>' + esc(b.buyerName) + '<div class="muted">' + esc(b.buyerPan) + ' • ' + esc(b.destLocation) + '</div>' +
+          '<div style="margin-top:3px"><span class="chip ' + (b.supplierIsDefault ? '' : 'warn') + '">बिक्रेता: ' + esc(b.supplierName) + '</span></div></td>' +
           '<td class="num">' + esc(b.qty) + '</td><td class="num">' + money(b.amount) + '</td></tr>';
       }).join('');
     $('revTotal').textContent = tq + ' ' + S.unitType + ' • Rs ' + money(ta);
@@ -566,7 +593,7 @@
       return '<div class="card"><div class="list-item"><div>' +
         '<div style="font-weight:700">' + esc(h.cid || '—') + '</div>' +
         '<div class="muted">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' • ' + esc(h.dest || '') + '</div>' +
-        '<div class="muted">' + (h.bills || []).map(function (b) { return (b.docType === '1' ? 'बिल ' : 'चलान ') + esc(b.docNo) + ' – ' + esc(b.buyerName); }).join('<br>') + '</div>' +
+        '<div class="muted">' + (h.bills || []).map(function (b) { return (b.docType === '1' ? 'बिल ' : 'चलान ') + esc(b.docNo) + ' – ' + esc(b.buyerName) + (b.supplierIsDefault === false ? ' <span class="chip warn">' + esc(b.supplierName) + '</span>' : ''); }).join('<br>') + '</div>' +
         '</div><div style="text-align:right">' +
         '<span class="chip ' + (h.status === 'ok' ? 'ok' : 'warn') + '">' + (h.status === 'ok' ? 'सकियो' : 'अधुरो') + '</span>' +
         '<div class="muted" style="margin-top:6px">' + tq + ' • Rs ' + money(ta) + '</div></div></div>' +
@@ -622,9 +649,32 @@
   });
 
   /* ---------- SETTINGS ---------- */
-  var FIELDS = ['username', 'vehicle', 'driverMobile', 'deptDistrict', 'deptLocation', 'goods', 'unitType', 'ownPan', 'ownName', 'challanDest'];
+  var FIELDS = ['username', 'vehicle', 'driverMobile', 'deptDistrict', 'deptLocation', 'goods', 'unitType', 'challanDest'];
+  var renderSuppliers = function () {
+    $('supList').innerHTML = S.suppliers.map(function (s, k) {
+      return '<div class="row" data-sup="' + k + '" style="align-items:flex-end">' +
+        '<div style="flex:1.4"><label>नाम' + (k === 0 ? ' (default)' : '') + '</label><input data-sf="name" value="' + esc(s.name) + '"></div>' +
+        '<div><label>PAN</label><input data-sf="pan" inputmode="numeric" maxlength="9" value="' + esc(s.pan) + '"></div>' +
+        (S.suppliers.length > 1 ? '<div style="flex:none"><button class="link bad" data-sdel="' + k + '" style="padding:12px 0">✕</button></div>' : '') +
+        '</div>';
+    }).join('');
+  };
+  var readSuppliers = function () {
+    return Array.prototype.map.call(document.querySelectorAll('#supList [data-sup]'), function (row) {
+      return { name: row.querySelector('[data-sf=name]').value.trim(), pan: row.querySelector('[data-sf=pan]').value.trim() };
+    }).filter(function (s) { return s.name || s.pan; });
+  };
+  $('addSup').addEventListener('click', function () { S.suppliers = readSuppliers(); S.suppliers.push({ name: '', pan: '' }); renderSuppliers(); });
+  $('supList').addEventListener('click', function (e) {
+    var d = e.target.closest('[data-sdel]');
+    if (!d) return;
+    S.suppliers = readSuppliers();
+    S.suppliers.splice(Number(d.getAttribute('data-sdel')), 1);
+    renderSuppliers();
+  });
   var renderSettings = function () {
     FIELDS.forEach(function (f) { $('s_' + f).value = S[f] || ''; });
+    renderSuppliers();
     $('s_password').value = '';
     var has = App.hasPassword();
     $('s_password').placeholder = has ? '•••••••• (सेभ भइसकेको)' : 'VCTS password';
@@ -633,6 +683,9 @@
   };
   var saveSettings = function () {
     FIELDS.forEach(function (f) { S[f] = $('s_' + f).value.trim(); });
+    var sups = readSuppliers();
+    if (sups.length) S.suppliers = sups;
+    S.ownName = S.suppliers[0].name; S.ownPan = S.suppliers[0].pan;
     S.vehicle = S.vehicle.toUpperCase().replace(/\s+/g, '');
     S.deptDistrict = S.deptDistrict.toUpperCase();
     save('settings', S);
@@ -642,7 +695,10 @@
   };
   $('saveSettings').addEventListener('click', function () {
     saveSettings();
-    $('syncResult').innerHTML = '<div class="note ok">सेभ भयो ✓</div>';
+    var badSup = S.suppliers.filter(function (s) { return !s.name || !/^[0-9]{9}$/.test(s.pan); });
+    $('syncResult').innerHTML = badSup.length
+      ? '<div class="note bad">बिक्रेताको PAN ९ अंकको हुनुपर्छ: ' + esc(badSup.map(function (s) { return s.name || s.pan; }).join(', ')) + '</div>'
+      : '<div class="note ok">सेभ भयो ✓</div>';
   });
   $('syncBtn').addEventListener('click', function () {
     saveSettings();
