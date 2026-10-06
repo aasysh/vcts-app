@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,3 +33,14 @@ jobs:
         with:
           name: VCTS-Helper-apk
           path: VCTS-Helper-*.apk
+
+      - name: Publish the APK on the "apk" branch
+        run: |
+          mkdir out && cp VCTS-Helper-*.apk out/VCTS-Helper.apk
+          cd out
+          git init -q -b apk
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add VCTS-Helper.apk
+          git commit -q -m "APK build ${{ github.run_number }}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" apk
