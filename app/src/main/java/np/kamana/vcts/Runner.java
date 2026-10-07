@@ -93,6 +93,21 @@ final class Runner {
             ArrayBlockingQueue<String> q = pending.get(id);
             if (q != null) q.offer(json);
         }
+
+        /** Progress text from long page tasks (e.g. reading past bills). */
+        @JavascriptInterface
+        public void progress(String text) {
+            try {
+                if (stage.isEmpty()) return;
+                JSONObject o = new JSONObject();
+                o.put("type", "step");
+                o.put("id", stage);
+                o.put("state", "run");
+                o.put("detail", text);
+                act.emit(o);
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     // ------------------------------------------------------------------ page events
@@ -126,42 +141,117 @@ final class Runner {
 
     // ------------------------------------------------------------------ tasks
 
+    private static boolean isMid(JSONObject job) {
+        return !job.optString("mid", "").isEmpty();
+    }
+
+    private static String billLabel(JSONObject bill) {
+        return ("2".equals(bill.optString("docType")) ? "चलान " : "बिल ") + bill.optString("docNo")
+                + " — " + bill.optString("buyerName", bill.optString("buyerPan"));
+    }
+
+    /**
+     * Before anything is saved: checks the login, the driver, every PAN (the name VCTS will print),
+     * today's date in VCTS and whether a consignment is still on the way.
+     */
+    void check(String jobJson) {
+        begin("check", () -> {
+            JSONObject job = new JSONObject(jobJson);
+            step("login", "VCTS मा लगइन");
+            ensureLogin();
+            ok("login", null);
+
+            step("check", "VCTS सँग जाँच्दै");
+            JSONObject info = jsObj("__vh.pageInfo()", 15000);
+            String today = info.optString("today", "");
+            if (today.isEmpty() || "null".equals(today)) throw new Exception("VCTS बाट आजको मिति पढ्न सकिएन।");
+            JSONObject dates = new JSONObject();
+            dates.put("0", today);
+            dates.put("1", jsVal("__vh.bsMinusDays(" + JSONObject.quote(today) + ",1)", 10000));
+            dates.put("2", jsVal("__vh.bsMinusDays(" + JSONObject.quote(today) + ",2)", 10000));
+
+            JSONObject out = new JSONObject();
+            out.put("type", "done");
+            out.put("mode", "check");
+            out.put("info", info);
+            out.put("dates", dates);
+
+            if (!isMid(job)) {
+                String mobile = job.optString("driverMobile", "");
+                if (!mobile.isEmpty()) out.put("driver", jsObj("__vh.checkDriver(" + JSONObject.quote(mobile) + ")", 30000));
+            }
+
+            JSONObject pans = new JSONObject();
+            JSONArray want = job.optJSONArray("pans");
+            for (int i = 0; want != null && i < want.length(); i++) {
+                String pan = want.getString(i);
+                if (pans.has(pan)) continue;
+                progressText("PAN " + pan);
+                pans.put(pan, jsObj("__vh.panLookup(" + JSONObject.quote(pan) + ")", 30000));
+            }
+            out.put("pans", pans);
+
+            if (isMid(job)) {
+                loadAuthed(BASE + "/consignment/mid_consignment_form/" + job.getString("mid"));
+                JSONObject mid = jsObj("__vh.pageInfo()", 15000);
+                if (!mid.optBoolean("hasForm")) throw new Exception("Add Mid-Consignment खुलेन। (Vehicle start भएको छ?)");
+                out.put("midInfo", mid);
+            }
+
+            progressText("Consignment list");
+            loadAuthed(BASE + "/consignment/consignment_list");
+            Object list = jsVal("__vh.listConsignments(60)", 60000);
+            out.put("list", list);
+            ok("check", null);
+            act.emit(out);
+        });
+    }
+
+    /** The website's own order: Save each bill → Lock Consignment → Start Vehicle → Print Consignment. */
     void runJob(String jobJson, boolean dry) {
         begin(dry ? "dry" : "real", () -> {
             JSONObject job = new JSONObject(jobJson);
             JSONArray bills = job.getJSONArray("bills");
             if (bills.length() == 0) throw new Exception("No bills.");
+            boolean mid = isMid(job);
 
             step("login", "VCTS मा लगइन");
             ensureLogin();
             ok("login", null);
 
-            step("form", "Consignment विवरण भर्दै");
             JSONObject info = jsObj("__vh.pageInfo()", 15000);
             String today = info.optString("today", "");
             if (today.isEmpty() || "null".equals(today)) throw new Exception("VCTS बाट आजको मिति पढ्न सकिएन।");
 
             JSONObject basic = new JSONObject();
-            basic.put("vehicle", job.getString("vehicle"));
-            basic.put("driverMobile", job.getString("driverMobile"));
+            basic.put("vehicle", job.optString("vehicle"));
+            basic.put("driverMobile", job.optString("driverMobile"));
             basic.put("deptDistrict", job.optString("deptDistrict"));
             basic.put("deptLocation", job.optString("deptLocation"));
             basic.put("destDistrict", job.getString("destDistrict"));
-            basic.put("destExtra", job.optString("destExtra"));
-            basic.put("departDate", today);
             basic.put("remarks", job.optString("remarks"));
-            JSONObject filled = jsObj("__vh.fillBasic(" + basic + ")", 60000);
+            JSONObject filled;
+            if (mid) {
+                step("form", "Add Mid-Consignment: विवरण भर्दै");
+                loadAuthed(BASE + "/consignment/mid_consignment_form/" + job.getString("mid"));
+                basic.put("departDate", job.optString("departDate", today));
+                filled = jsObj("__vh.fillMidBasic(" + basic + ")", 60000);
+            } else {
+                step("form", "Add Consignment: विवरण भर्दै");
+                basic.put("departDate", today);
+                filled = jsObj("__vh.fillBasic(" + basic + ")", 60000);
+            }
             ok("form", filled.optString("vehicle") + " • " + filled.optString("driver") + " • " + filled.optString("to") + " • " + filled.optString("date"));
 
             for (int i = 0; i < bills.length(); i++) {
                 JSONObject bill = bills.getJSONObject(i);
                 if (bill.optString("docDate", "").isEmpty()) bill.put("docDate", today);
                 String key = "bill" + i;
-                String label = ("1".equals(bill.optString("docType")) ? "बिल " : "चलान ") + bill.optString("docNo") + " — " + bill.optString("buyerName");
-                step(key, label);
+                step(key, "Save — " + billLabel(bill));
                 jsObj("__vh.addDocRow()", 30000);
                 JSONObject read = jsObj("__vh.fillDoc(" + bill + ")", 60000);
-                String detail = read.optString("qty") + " " + read.optString("unit") + " • Rs " + read.optString("amount") + " • " + read.optString("buyer");
+                String detail = read.optString("qty") + " " + read.optString("unit") + " • Rs " + read.optString("amount")
+                        + " • " + read.optString("buyer") + " • " + read.optString("destination");
                 if (dry) {
                     ok(key, "भरियो (save गरिएन) — " + detail);
                     JSONObject d = new JSONObject();
@@ -171,7 +261,7 @@ final class Runner {
                     act.setSiteStatus("TEST — Save नथिच्नुहोस्");
                     return;
                 }
-                JSONObject saved = jsObj("__vh.saveDoc()", 90000);
+                JSONObject saved = jsObj("__vh.saveDoc()", 120000);
                 String cid = saved.optString("consignmentId", "");
                 if (!cid.isEmpty()) consignmentId = cid;
                 if (!saved.optBoolean("ok")) {
@@ -182,21 +272,28 @@ final class Runner {
                 ok(key, "Save भयो — " + detail);
             }
 
-            step("lock", "Consignment lock गर्दै (" + consignmentId + ")");
+            step("lock", "Lock Consignment (" + consignmentId + ")");
             loadAuthed(BASE + "/consignment/consignment_list");
             JSONObject lock = jsObj("__vh.lock(" + JSONObject.quote(consignmentId) + ")", 90000);
             ok("lock", lock.optBoolean("already") ? "पहिले नै locked" : lock.optString("message"));
 
-            step("start", "Vehicle start गर्दै");
-            loadAuthed(BASE + "/consignment/consignment_list");
+            step("start", "Start Vehicle");
             JSONObject start = jsObj("__vh.start(" + JSONObject.quote(consignmentId) + ")", 90000);
             ok("start", start.optBoolean("already") ? "पहिले नै started" : start.optString("message"));
 
-            step("pdf", "PDF र फोटो (JPEG) बनाउँदै");
             JSONObject d = new JSONObject();
             d.put("type", "done");
             d.put("mode", "real");
             d.put("consignmentId", consignmentId);
+            try {
+                d.put("row", jsVal("__vh.rowById(" + JSONObject.quote(consignmentId) + ")", 60000));
+                d.put("docs", jsVal("__vh.docList(" + JSONObject.quote(consignmentId) + ", true)", 60000));
+            } catch (StopException e) {
+                throw e;
+            } catch (Exception ignored) {
+            }
+
+            step("pdf", "Print Consignment (फोटो र PDF)");
             makeOutputs(consignmentId, d);
             act.emit(d);
         });
@@ -218,6 +315,7 @@ final class Runner {
         }
     }
 
+    /** Login check, driver check, and reading past consignments and bills (customers come from these). */
     void sync(String json) {
         begin("sync", () -> {
             JSONObject in = new JSONObject(json);
@@ -233,6 +331,93 @@ final class Runner {
             d.put("type", "done");
             d.put("mode", "sync");
             d.put("info", info);
+            readHistory(in, d);
+            act.emit(d);
+        });
+    }
+
+    /** Reads the consignment list and any bills not yet in the app. */
+    void refresh(String json) {
+        begin("refresh", () -> {
+            JSONObject in = new JSONObject(json);
+            JSONObject d = new JSONObject();
+            d.put("type", "done");
+            d.put("mode", "refresh");
+            readHistory(in, d);
+            act.emit(d);
+        });
+    }
+
+    private void readHistory(JSONObject in, JSONObject d) throws Exception {
+        step("history", "VCTS बाट consignment र ग्राहक ल्याउँदै");
+        loadAuthed(BASE + "/consignment/consignment_list");
+        JSONArray known = in.optJSONArray("known");
+        String since = in.optString("since", "");
+        JSONObject data = jsObj("__vh.syncData(" + (known == null ? "[]" : known.toString()) + "," + JSONObject.quote(since) + ")", 15 * 60000);
+        d.put("data", data);
+        JSONArray docs = data.optJSONArray("docs");
+        ok("history", (data.optJSONArray("list") == null ? 0 : data.optJSONArray("list").length()) + " consignment, "
+                + (docs == null ? 0 : docs.length()) + " नयाँ बिल");
+    }
+
+    /** End Delivery for some bills (VCTS ids) or "all", like the End Delivery window. */
+    void endDelivery(String json) {
+        begin("end", () -> {
+            JSONObject in = new JSONObject(json);
+            String cid = in.getString("cid");
+            consignmentId = cid;
+            Object which = in.opt("which");
+            step("end", "End Delivery (" + cid + ")");
+            loadAuthed(BASE + "/consignment/consignment_list");
+            String arg = which instanceof JSONArray ? which.toString() : "'all'";
+            JSONObject r = jsObj("__vh.endDelivery(" + JSONObject.quote(cid) + "," + arg + ")", 90000);
+            ok("end", r.optBoolean("nothing") ? "सबै पहिले नै Delivered" : r.optString("message"));
+            JSONObject d = new JSONObject();
+            d.put("type", "done");
+            d.put("mode", "end");
+            d.put("consignmentId", cid);
+            d.put("docs", r.optJSONArray("docs"));
+            try {
+                d.put("row", jsVal("__vh.rowById(" + JSONObject.quote(cid) + ")", 60000));
+            } catch (StopException e) {
+                throw e;
+            } catch (Exception ignored) {
+            }
+            act.emit(d);
+        });
+    }
+
+    /** Lock Consignment or Start Vehicle for one consignment, like the website menu. */
+    void action(String json) {
+        begin("action", () -> {
+            JSONObject in = new JSONObject(json);
+            String cid = in.getString("cid");
+            String what = in.getString("what");
+            consignmentId = cid;
+            loadAuthed(BASE + "/consignment/consignment_list");
+            if ("lock".equals(what)) {
+                step("lock", "Lock Consignment (" + cid + ")");
+                JSONObject r = jsObj("__vh.lock(" + JSONObject.quote(cid) + ")", 90000);
+                ok("lock", r.optBoolean("already") ? "पहिले नै locked" : r.optString("message"));
+            } else if ("start".equals(what)) {
+                step("start", "Start Vehicle (" + cid + ")");
+                JSONObject r = jsObj("__vh.start(" + JSONObject.quote(cid) + ")", 90000);
+                ok("start", r.optBoolean("already") ? "पहिले नै started" : r.optString("message"));
+            } else {
+                throw new Exception("Unknown action " + what);
+            }
+            JSONObject d = new JSONObject();
+            d.put("type", "done");
+            d.put("mode", "action");
+            d.put("what", what);
+            d.put("consignmentId", cid);
+            d.put("row", jsVal("__vh.rowById(" + JSONObject.quote(cid) + ")", 60000));
+            try {
+                d.put("docs", jsVal("__vh.docList(" + JSONObject.quote(cid) + ", true)", 60000));
+            } catch (StopException e) {
+                throw e;
+            } catch (Exception ignored) {
+            }
             act.emit(d);
         });
     }
@@ -243,7 +428,7 @@ final class Runner {
             step("login", "VCTS मा लगइन");
             ensureLogin();
             ok("login", null);
-            step("pdf", "PDF र फोटो (JPEG) बनाउँदै");
+            step("pdf", "Print Consignment (फोटो र PDF)");
             JSONObject d = new JSONObject();
             d.put("type", "done");
             d.put("mode", "reprint");
@@ -253,9 +438,13 @@ final class Runner {
         });
     }
 
+    private void progressText(String text) {
+        bridge.progress(text);
+    }
+
     private void begin(String m, Task task) {
         if (running) {
-            emitError(m, "अर्को काम चलिरहेको छ।", false, false);
+            emitError(m, "अर्को काम चलिरहेको छ। एकछिन पछि फेरि थिच्नुहोस्।", false, false);
             return;
         }
         running = true;
@@ -452,10 +641,10 @@ final class Runner {
     }
 
     private void ensureBot() throws Exception {
-        String has = evalSync("(typeof window.__vh === 'object' && window.__vh.v === 1)", 10000);
+        String has = evalSync("(typeof window.__vh === 'object' && window.__vh.v === 2)", 10000);
         if ("true".equals(has)) return;
         evalSync(botJs + "\n;true", 15000);
-        has = evalSync("(typeof window.__vh === 'object' && window.__vh.v === 1)", 10000);
+        has = evalSync("(typeof window.__vh === 'object' && window.__vh.v === 2)", 10000);
         if (!"true".equals(has)) throw new Exception("VCTS page मा helper चलेन।");
     }
 

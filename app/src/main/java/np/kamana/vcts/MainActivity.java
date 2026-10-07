@@ -293,6 +293,26 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void check(String jobJson) {
+            runner.check(jobJson);
+        }
+
+        @JavascriptInterface
+        public void refresh(String json) {
+            runner.refresh(json);
+        }
+
+        @JavascriptInterface
+        public void endDelivery(String json) {
+            runner.endDelivery(json);
+        }
+
+        @JavascriptInterface
+        public void action(String json) {
+            runner.action(json);
+        }
+
+        @JavascriptInterface
         public void reprint(String consignmentId) {
             runner.reprint(consignmentId);
         }

@@ -15,70 +15,97 @@
   header { position: sticky; top: 0; z-index: 5; background: var(--brand); color: #fff; padding: 14px 16px 12px; }
   header h1 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: .2px; }
   header .sub { font-size: 13px; opacity: .85; margin-top: 2px; }
-  main { padding: 14px 14px 96px; max-width: 640px; margin: 0 auto; }
+  main { padding: 14px 14px 104px; max-width: 640px; margin: 0 auto; }
   nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 5; display: flex; background: #fff; border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
   nav button { flex: 1; border: 0; background: none; padding: 9px 4px 10px; font: inherit; font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 2px; }
   nav button .ico { font-size: 20px; line-height: 1; }
   nav button.on { color: var(--brand); font-weight: 700; }
   .screen { display: none; }
   .screen.on { display: block; }
-  h2 { font-size: 17px; margin: 6px 2px 10px; }
+  h2 { font-size: 18px; margin: 6px 2px 12px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
-  .card h3 { margin: 0 0 10px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
-  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
-  label:first-child { margin-top: 0; }
-  input, select, textarea { width: 100%; font: inherit; font-size: 16px; color: var(--ink); padding: 11px 12px; border: 1px solid #c9d0db; border-radius: 10px; background: #fff; }
+  .card h3 { margin: 0 0 10px; font-size: 16px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  label { display: block; font-size: 13.5px; color: var(--muted); margin: 12px 0 5px; }
+  input, select, textarea { width: 100%; font: inherit; font-size: 17px; color: var(--ink); padding: 12px 12px; border: 1px solid #c9d0db; border-radius: 10px; background: #fff; }
   input:focus, select:focus { outline: 2px solid #9cc3e6; border-color: var(--brand); }
-  input.err, select.err { border-color: var(--bad); background: var(--bad-bg); }
+  input.err, select.err, .seg.err, .search.err input { border-color: var(--bad); background: var(--bad-bg); }
   .row { display: flex; gap: 10px; }
   .row > div { flex: 1; min-width: 0; }
   .seg { display: flex; border: 1px solid #c9d0db; border-radius: 10px; overflow: hidden; }
-  .seg button { flex: 1; border: 0; background: #fff; padding: 10px; font: inherit; color: var(--muted); }
+  .seg button { flex: 1; border: 0; border-left: 1px solid #e3e7ee; background: #fff; padding: 11px 6px; font: inherit; font-size: 15px; color: var(--muted); }
+  .seg button:first-child { border-left: 0; }
   .seg button.on { background: var(--brand); color: #fff; font-weight: 700; }
-  .btn { display: block; width: 100%; border: 0; border-radius: 12px; padding: 14px; font: inherit; font-weight: 700; font-size: 16px; margin-top: 10px; }
+  .btn { display: block; width: 100%; border: 0; border-radius: 12px; padding: 15px; font: inherit; font-weight: 700; font-size: 17px; margin-top: 10px; }
   .btn.primary { background: var(--brand); color: #fff; }
   .btn.go { background: var(--ok); color: #fff; }
   .btn.ghost { background: var(--brand-2); color: var(--brand); }
   .btn.plain { background: #fff; color: var(--ink); border: 1px solid var(--line); }
   .btn.danger { background: #fff; color: var(--bad); border: 1px solid #f1b8b3; }
-  .btn:disabled { opacity: .5; }
+  .btn.warnb { background: var(--warn); color: #fff; }
+  .btn:disabled { opacity: .45; }
   .link { background: none; border: 0; color: var(--brand); font: inherit; font-size: 14px; padding: 4px 0; }
   .link.bad { color: var(--bad); }
   .muted { color: var(--muted); font-size: 13.5px; }
-  .note { border-radius: 12px; padding: 11px 13px; font-size: 14px; margin: 10px 0; }
+  .note { border-radius: 12px; padding: 12px 13px; font-size: 14.5px; margin: 10px 0; }
   .note.ok { background: var(--ok-bg); color: var(--ok); }
   .note.warn { background: var(--warn-bg); color: var(--warn); }
   .note.bad { background: var(--bad-bg); color: var(--bad); }
   .note.info { background: var(--brand-2); color: var(--brand); }
-  dl.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; font-size: 14.5px; }
+  .note .btn { margin-top: 8px; padding: 11px; font-size: 15px; }
+  dl.kv { display: grid; grid-template-columns: auto 1fr; gap: 7px 12px; margin: 0; font-size: 15px; }
   dl.kv dt { color: var(--muted); }
   dl.kv dd { margin: 0; font-weight: 600; word-break: break-word; }
-  table.bills { width: 100%; border-collapse: collapse; font-size: 14px; }
-  table.bills th, table.bills td { text-align: left; padding: 7px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  table.bills th { color: var(--muted); font-weight: 600; font-size: 12.5px; }
-  table.bills td.num, table.bills th.num { text-align: right; white-space: nowrap; }
-  .total { display: flex; justify-content: space-between; font-weight: 700; margin-top: 10px; font-size: 15px; }
   .steps { list-style: none; padding: 0; margin: 0; }
-  .steps li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .steps li { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 15.5px; }
   .steps li:last-child { border-bottom: 0; }
   .steps .st { width: 22px; flex: none; text-align: center; }
   .steps .d { color: var(--muted); font-size: 13px; }
+  .steps:empty { display: none; }
   .spin { display: inline-block; width: 16px; height: 16px; border: 2.5px solid #b9cde2; border-top-color: var(--brand); border-radius: 50%; animation: sp .8s linear infinite; vertical-align: -2px; }
   @keyframes sp { to { transform: rotate(360deg); } }
-  .big { font-size: 22px; font-weight: 800; letter-spacing: .5px; }
+  .big { font-size: 23px; font-weight: 800; letter-spacing: .5px; }
   .list-item { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
-  .chip { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--brand-2); color: var(--brand); font-weight: 600; }
+  .chip { display: inline-block; font-size: 12.5px; padding: 2px 9px; border-radius: 99px; background: var(--brand-2); color: var(--brand); font-weight: 600; white-space: nowrap; }
   .chip.ok { background: var(--ok-bg); color: var(--ok); }
   .chip.bad { background: var(--bad-bg); color: var(--bad); }
   .chip.warn { background: var(--warn-bg); color: var(--warn); }
   .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-  .actions .btn { margin-top: 0; flex: 1; padding: 11px; font-size: 14.5px; }
-  .modal { position: fixed; inset: 0; background: rgba(15, 25, 45, .45); display: none; align-items: flex-end; z-index: 20; }
+  .actions .btn { margin-top: 0; flex: 1; padding: 12px; font-size: 15px; min-width: 40%; }
+  .modal { position: fixed; inset: 0; background: rgba(15, 25, 45, .5); display: none; align-items: flex-end; z-index: 20; }
   .modal.on { display: flex; }
-  .sheet { background: #fff; width: 100%; max-width: 640px; margin: 0 auto; border-radius: 18px 18px 0 0; padding: 16px 16px 22px; max-height: 92vh; overflow: auto; }
-  .sheet h3 { margin: 0 0 6px; }
+  .sheet { background: #fff; width: 100%; max-width: 640px; margin: 0 auto; border-radius: 18px 18px 0 0; padding: 18px 16px 24px; max-height: 92vh; overflow: auto; }
+  .sheet h3 { margin: 0 0 8px; font-size: 19px; }
   .empty { text-align: center; color: var(--muted); padding: 30px 10px; }
   img.shot { display: block; width: 100%; margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+  .search { display: flex; gap: 8px; }
+  .search input { flex: 1; }
+  .search button { flex: none; border: 1px solid #c9d0db; background: #fff; border-radius: 10px; padding: 0 12px; font: inherit; color: var(--brand); font-weight: 700; }
+  .sugg { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .sugg button { text-align: left; border: 1px solid var(--line); background: #fafbfd; border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 15.5px; color: var(--ink); }
+  .sugg button small { display: block; color: var(--muted); font-size: 13px; }
+  .sugg button.newpan { border-style: dashed; color: var(--brand); }
+  .picked { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid #b7d3c2; background: var(--ok-bg); border-radius: 10px; padding: 10px 12px; }
+  .picked b { display: block; font-size: 16.5px; }
+  .picked small { color: var(--muted); font-size: 13px; }
+  .words { font-size: 14px; color: var(--brand); margin-top: 6px; min-height: 1em; }
+  .fixed { border: 1px dashed #c9d0db; border-radius: 10px; padding: 11px 12px; background: #f7f8fa; font-weight: 700; margin-bottom: 8px; }
+  .rbill .rhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .rbill .rhead b { font-size: 19px; }
+  .rline { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid #eef1f5; font-size: 16px; }
+  .rline span { color: var(--muted); }
+  .rline b { text-align: right; }
+  .warnline { color: var(--warn); background: var(--warn-bg); border-radius: 8px; padding: 7px 10px; margin-top: 8px; font-size: 14px; }
+  .badline { color: var(--bad); background: var(--bad-bg); border-radius: 8px; padding: 7px 10px; margin-top: 8px; font-size: 14px; }
+  .tot { display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; }
+  .docrow { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid #eef1f5; }
+  .docrow:first-child { border-top: 0; }
+  .docrow input[type=checkbox] { width: 26px; height: 26px; flex: none; margin-top: 2px; }
+  .docrow .grow { flex: 1; min-width: 0; }
+  .fontbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fontbtns button { border: 1px solid #c9d0db; background: #fff; border-radius: 10px; padding: 12px; font: inherit; color: var(--ink); }
+  .fontbtns button.on { background: var(--brand); color: #fff; font-weight: 700; border-color: var(--brand); }
+  .ver { text-align: center; color: var(--muted); font-size: 13px; padding: 18px 0 6px; user-select: none; }
+  .adv { border-color: #f1d9a6; }
 </style>
 </head>
 <body>
@@ -90,32 +117,22 @@
 <main>
   <!-- NEW -->
   <section class="screen on" id="scr-new">
-    <div id="setupHint"></div>
+    <div id="newTop"></div>
     <div class="card">
-      <h3>गन्तव्य (Destination)</h3>
-      <label>जिल्ला (District)</label>
-      <input type="hidden" id="destDistrict">
+      <h3>अन्तिम गन्तव्य</h3>
       <div class="seg" id="destSeg"></div>
-      <label for="destExtra">स्थान थप (optional)</label>
-      <input id="destExtra" placeholder="खाली छोड्न सकिन्छ">
     </div>
     <div id="billList"></div>
-    <button class="btn ghost" id="addBill">+ अर्को बिल थप्नुहोस्</button>
-    <button class="btn primary" id="toReview">जाँच गर्नुहोस् (Review) →</button>
+    <button class="btn ghost" id="addBill">+ अर्को बिल / चलान थप्नुहोस्</button>
+    <button class="btn primary" id="toCheck">जाँच गर्नुहोस् →</button>
   </section>
 
   <!-- REVIEW -->
   <section class="screen" id="scr-review">
-    <h2>एक पटक जाँच गर्नुहोस्</h2>
-    <div class="card"><dl class="kv" id="revFixed"></dl></div>
-    <div class="card">
-      <h3>बिलहरू</h3>
-      <table class="bills" id="revBills"></table>
-      <div class="total"><span>जम्मा</span><span id="revTotal"></span></div>
-    </div>
-    <div class="note warn">Confirm थिचेपछि VCTS मा save, lock र vehicle start हुन्छ। VCTS मा गल्ती सच्याउन गाह्रो हुन्छ, त्यसैले नम्बरहरू राम्ररी हेर्नुहोस्।</div>
-    <button class="btn go" id="confirmRun">✓ Confirm — VCTS मा बनाउनुहोस्</button>
-    <button class="btn plain" id="dryRun">Test मात्र (फारम भर्ने, save नगर्ने)</button>
+    <h2>अन्तिम जाँच</h2>
+    <div id="reviewBody"></div>
+    <button class="btn go" id="confirmRun">✓ सबै ठीक छ — VCTS मा पठाउनुहोस्</button>
+    <button class="btn plain adv-only" id="dryRun">Test मात्र (फारम भर्ने, save नगर्ने)</button>
     <button class="btn plain" id="backEdit">← सच्याउनुहोस्</button>
   </section>
 
@@ -124,69 +141,92 @@
     <h2 id="runTitle">VCTS मा काम हुँदैछ…</h2>
     <div class="card"><ul class="steps" id="steps"></ul></div>
     <div id="runResult"></div>
-    <div class="actions" id="runActions">
+    <div class="actions adv-only" id="runActions">
       <button class="btn plain" id="showSite">VCTS page हेर्नुहोस्</button>
       <button class="btn danger" id="stopRun">रोक्नुहोस्</button>
     </div>
   </section>
 
-  <!-- HISTORY -->
-  <section class="screen" id="scr-history">
-    <h2>पहिलेका consignment</h2>
-    <div id="histList"></div>
+  <!-- CONSIGNMENTS -->
+  <section class="screen" id="scr-list">
+    <h2>Consignment हरू</h2>
+    <button class="btn ghost" id="refreshList">↻ VCTS बाट ताजा गर्नुहोस्</button>
+    <div class="muted" id="listInfo" style="margin:8px 2px 10px"></div>
+    <div id="consList"></div>
+  </section>
+
+  <!-- DETAIL -->
+  <section class="screen" id="scr-detail">
+    <div id="detailBody"></div>
+    <button class="btn plain" id="detailBack">← Consignment हरू</button>
   </section>
 
   <!-- CUSTOMERS -->
   <section class="screen" id="scr-customers">
     <h2>ग्राहकहरू</h2>
-    <p class="muted">बिलमा छान्नका लागि। PAN राख्दा VCTS ले नाम आफैं भर्छ।</p>
+    <div class="search"><input id="custSearch" placeholder="PAN वा नाम खोज्नुहोस्" autocomplete="off"></div>
+    <div class="muted" id="custInfo" style="margin:8px 2px"></div>
     <div id="custList"></div>
     <button class="btn ghost" id="addCust">+ नयाँ ग्राहक</button>
+    <button class="btn plain" id="importCust">↻ VCTS बाट ग्राहक ल्याउनुहोस्</button>
   </section>
 
   <!-- SETTINGS -->
   <section class="screen" id="scr-settings">
     <h2>सेटिङ</h2>
     <div class="card">
-      <h3>VCTS लगइन</h3>
-      <label for="s_username">User Name</label>
-      <input id="s_username" autocomplete="username" autocapitalize="off">
-      <label for="s_password">Password</label>
-      <input id="s_password" type="password" autocomplete="current-password" placeholder="">
-      <div class="muted" id="pwState"></div>
+      <h3>अक्षरको साइज</h3>
+      <div class="fontbtns" id="fontBtns"></div>
+      <div class="muted" style="margin-top:10px">यो अक्षर यस्तो देखिन्छ: बिल २१६ — रु १,६८,९९२</div>
     </div>
-    <div class="card">
-      <h3>सधैं उही रहने विवरण</h3>
-      <label for="s_vehicle">गाडी नम्बर (VCTS जस्तै: KO1CHA7335)</label>
-      <input id="s_vehicle" autocapitalize="characters">
-      <label for="s_driverMobile">चालकको मोबाइल नम्बर</label>
-      <input id="s_driverMobile" inputmode="numeric">
-      <div class="row">
-        <div><label for="s_deptDistrict">कहाँबाट (जिल्ला)</label><input id="s_deptDistrict" autocapitalize="characters"></div>
-        <div><label for="s_deptLocation">स्थान</label><input id="s_deptLocation"></div>
+    <div id="setupNote"></div>
+    <div id="advBox">
+      <div class="card adv">
+        <h3>VCTS लगइन</h3>
+        <label for="s_username">User Name</label>
+        <input id="s_username" autocomplete="username" autocapitalize="off">
+        <label for="s_password">Password</label>
+        <input id="s_password" type="password" autocomplete="current-password" placeholder="">
+        <div class="muted" id="pwState"></div>
       </div>
-      <div class="row">
-        <div><label for="s_goods">सामानको प्रकृति</label><input id="s_goods"></div>
-        <div><label for="s_unitType">इकाई</label><input id="s_unitType"></div>
+      <div class="card adv">
+        <h3>सधैं उही रहने विवरण</h3>
+        <label for="s_vehicle">गाडी नम्बर (VCTS जस्तै: KO1CHA7335)</label>
+        <input id="s_vehicle" autocapitalize="characters">
+        <label for="s_driverMobile">चालकको मोबाइल नम्बर</label>
+        <input id="s_driverMobile" inputmode="numeric">
+        <div class="row">
+          <div><label for="s_deptDistrict">कहाँबाट (जिल्ला)</label><input id="s_deptDistrict" autocapitalize="characters"></div>
+          <div><label for="s_deptLocation">स्थान</label><input id="s_deptLocation"></div>
+        </div>
+        <div class="row">
+          <div><label for="s_goods">सामानको प्रकृति</label><input id="s_goods"></div>
+          <div><label for="s_unitType">इकाई</label><input id="s_unitType"></div>
+        </div>
       </div>
+      <div class="card adv">
+        <h3>बिक्रेता (Supplier)</h3>
+        <div class="muted">पहिलो नाम नयाँ बिलमा आफैं छानिन्छ।</div>
+        <div id="supList"></div>
+        <button class="link" id="addSup">+ अर्को बिक्रेता</button>
+      </div>
+      <div class="card adv">
+        <h3>छोराको WhatsApp</h3>
+        <label for="s_sonNumber">समस्या आउँदा “छोरालाई पठाउनुहोस्” यो नम्बरमा जान्छ</label>
+        <input id="s_sonNumber" inputmode="tel" placeholder="98XXXXXXXX">
+      </div>
+      <button class="btn primary" id="saveSettings">सेभ गर्नुहोस्</button>
+      <button class="btn ghost" id="syncBtn">लगइन जाँच र VCTS sync</button>
+      <div id="syncResult"></div>
+      <button class="btn plain" id="advOff">Advanced लुकाउनुहोस्</button>
     </div>
-    <div class="card">
-      <h3>बिक्रेता (Supplier)</h3>
-      <div class="muted">पहिलो नाम नयाँ बिलमा आफैं छानिन्छ।</div>
-      <div id="supList"></div>
-      <button class="link" id="addSup">+ अर्को बिक्रेता</button>
-      <label for="s_challanDest">चलानको गन्तव्य स्थान</label>
-      <input id="s_challanDest">
-    </div>
-    <button class="btn primary" id="saveSettings">सेभ गर्नुहोस्</button>
-    <button class="btn ghost" id="syncBtn">लगइन जाँच र VCTS sync</button>
-    <div id="syncResult"></div>
+    <div class="ver" id="verLine">VCTS Helper</div>
   </section>
 </main>
 
 <nav>
   <button class="on" data-go="new"><span class="ico">＋</span>नयाँ</button>
-  <button data-go="history"><span class="ico">☰</span>इतिहास</button>
+  <button data-go="list"><span class="ico">☰</span>Consignment</button>
   <button data-go="customers"><span class="ico">☺</span>ग्राहक</button>
   <button data-go="settings"><span class="ico">⚙</span>सेटिङ</button>
 </nav>
@@ -199,12 +239,20 @@
     <input id="c_name">
     <label for="c_pan">PAN (९ अंक)</label>
     <input id="c_pan" inputmode="numeric" maxlength="9">
-    <label for="c_district">जिल्ला</label>
-    <select id="c_district"></select>
-    <label for="c_location">बिलको गन्तव्य स्थान</label>
-    <input id="c_location" placeholder="जिल्ला नै राख्न खाली छोड्नुहोस्">
+    <label>जिल्ला</label>
+    <div class="seg" id="c_dist"></div>
     <button class="btn primary" id="custSave">सेभ</button>
     <button class="btn plain" id="custCancel">रद्द</button>
+  </div>
+</div>
+
+<!-- confirm -->
+<div class="modal" id="askModal">
+  <div class="sheet">
+    <h3 id="askTitle"></h3>
+    <div id="askBody"></div>
+    <button class="btn go" id="askYes">हो</button>
+    <button class="btn plain" id="askNo">होइन</button>
   </div>
 </div>
 
@@ -218,10 +266,10 @@
     put: function (k, v) { localStorage.setItem('vh_' + k, v); },
     setPassword: function () { localStorage.setItem('vh_pw', '1'); },
     hasPassword: function () { return !!localStorage.getItem('vh_pw'); },
-    run: function () { alert('Only works inside the app'); },
-    sync: function () { alert('Only works inside the app'); },
-    reprint: function () {}, stop: function () {}, showSite: function () {},
-    openFile: function () {}, shareFile: function () {}, fileExists: function () { return false; }
+    run: function () {}, sync: function () {}, check: function () {}, refresh: function () {},
+    endDelivery: function () {}, action: function () {}, reprint: function () {}, stop: function () {}, showSite: function () {},
+    openFile: function () {}, shareFile: function () {}, fileExists: function () { return false; },
+    sendWhatsApp: function () {}, version: function () { return ''; }
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -230,313 +278,602 @@
   var save = function (k, v) { App.put(k, JSON.stringify(v)); };
   var money = function (n) { n = Number(n) || 0; return n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
   var uid = function () { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
+  var each = function (sel, fn) { Array.prototype.forEach.call(document.querySelectorAll(sel), fn); };
+  var titleCase = function (s) { s = String(s || '').toLowerCase(); return s.charAt(0).toUpperCase() + s.slice(1); };
+  var distOf = function (s) { s = String(s || '').toUpperCase(); return s.indexOf('SUNSARI') >= 0 ? 'SUNSARI' : (s.indexOf('MORANG') >= 0 ? 'MORANG' : ''); };
+  var fyOf = function (iso) { var p = String(iso || '').split('-').map(Number); return p[1] >= 4 ? p[0] : p[0] - 1; };
 
+  /* ---------- amount in Nepali words ---------- */
+  var NPW = ('शून्य एक दुई तीन चार पाँच छ सात आठ नौ दश एघार बाह्र तेह्र चौध पन्ध्र सोह्र सत्र अठार उन्नाइस बीस ' +
+    'एक्काइस बाइस तेइस चौबीस पच्चीस छब्बीस सत्ताइस अठ्ठाइस उनन्तीस तीस एकतीस बत्तीस तेत्तीस चौँतीस पैँतीस छत्तीस सैँतीस अठतीस उनन्चालीस चालीस ' +
+    'एकचालीस बयालीस त्रिचालीस चवालीस पैँतालीस छयालीस सतचालीस अठचालीस उनन्चास पचास एकाउन्न बाउन्न त्रिपन्न चउन्न पचपन्न छपन्न सन्ताउन्न अन्ठाउन्न उनन्साठी साठी ' +
+    'एकसट्ठी बयसट्ठी त्रिसट्ठी चौसट्ठी पैँसट्ठी छयसट्ठी सतसट्ठी अठसट्ठी उनन्सत्तरी सत्तरी एकहत्तर बहत्तर त्रिहत्तर चौहत्तर पचहत्तर छयहत्तर सतहत्तर अठहत्तर उनासी असी ' +
+    'एकासी बयासी त्रियासी चौरासी पचासी छयासी सतासी अठासी उनान्नब्बे नब्बे एकान्नब्बे बयान्नब्बे त्रियान्नब्बे चौरान्नब्बे पन्चान्नब्बे छयान्नब्बे सन्तान्नब्बे अन्ठान्नब्बे उनान्सय').split(' ');
+  var npInt = function (x) {
+    var out = [];
+    if (x >= 10000000) { out.push(npInt(Math.floor(x / 10000000)) + ' करोड'); x %= 10000000; }
+    if (x >= 100000) { out.push(NPW[Math.floor(x / 100000)] + ' लाख'); x %= 100000; }
+    if (x >= 1000) { out.push(NPW[Math.floor(x / 1000)] + ' हजार'); x %= 1000; }
+    if (x >= 100) { out.push(NPW[Math.floor(x / 100)] + ' सय'); x %= 100; }
+    if (x > 0) out.push(NPW[x]);
+    return out.join(' ');
+  };
+  var npWords = function (amount) {
+    var n = Math.round(Number(amount) * 100);
+    if (!(n > 0)) return '';
+    var rs = Math.floor(n / 100), ps = n % 100;
+    var r = rs ? npInt(rs) + ' रुपैयाँ' : '';
+    var p = ps ? NPW[ps] + ' पैसा' : '';
+    return (r && p) ? r + ' ' + p : (r || p);
+  };
+
+  /* ---------- stored data ---------- */
   var DEFAULT_SETTINGS = {
     username: '', vehicle: 'KO1CHA7335', driverMobile: '9844010608',
     deptDistrict: 'MORANG', deptLocation: 'Biratnagar-09',
-    goods: 'Alcohol', unitType: 'कार्टुन',
-    ownPan: '300039166', ownName: 'KAMANA TRADERS', challanDest: 'Mobile Sales-Morang',
+    goods: 'Alcohol', unitType: 'कार्टुन', sonNumber: '', fontScale: 1.15, advanced: false,
     suppliers: [{ name: 'KAMANA TRADERS', pan: '300039166' }, { name: 'DANGAL BROTHERS', pan: '107353065' }]
   };
   var DEFAULT_CUSTOMERS = [
-    { id: 'c1', name: 'रुवि होटल', pan: '622156260', district: 'MORANG', location: '' },
-    { id: 'c2', name: 'Nar Bahadur Hotel', pan: '601572267', district: 'MORANG', location: '' },
-    { id: 'c3', name: 'मुगाछाप होटल', pan: '300756746', district: 'MORANG', location: '' },
-    { id: 'c4', name: 'स्वागतम मदिरा पसल', pan: '603957679', district: 'SUNSARI', location: '' }
+    { id: 'p622156260', name: 'रुवि होटल', pan: '622156260', district: 'MORANG' },
+    { id: 'p601572267', name: 'Nar Bahadur Hotel', pan: '601572267', district: 'MORANG' },
+    { id: 'p300756746', name: 'मुगाछाप होटल', pan: '300756746', district: 'MORANG' },
+    { id: 'p603957679', name: 'स्वागतम मदिरा पसल', pan: '603957679', district: 'SUNSARI' }
   ];
-  var DEFAULT_DISTRICTS = ('ACHHAM ARGHAKHANCHI BAGLUNG BAITADI BAJHANG BAJURA BANKE BARA BARDIYA BHAKTAPUR BHOJPUR CHITWAN ' +
-    'DADELDHURA DAILEKH DANG DARCHULA DHADING DHANKUTA DHANUSA DOLAKHA DOLPA DOTI GORKHA GULMI HUMLA ILAM JAJARKOT JHAPA ' +
-    'JUMLA KAILALI KALIKOT KANCHANPUR KAPILVASTU KASKI KATHMANDU KAVREPALANCHOK KHOTANG LALITPUR LAMJUNG MAHOTTARI ' +
-    'MAKWANPUR MANANG MORANG MUGU MUSTANG MYAGDI NUWAKOT OKHALDHUNGA PALPA PANCHTHAR PARBAT PARSA PYUTHAN RAMECHHAP ' +
-    'RASUWA RAUTAHAT ROLPA RUPANDEHI SALYAN SANKHUWASABHA SAPTARI SARLAHI SINDHULI SINDHUPALCHOK SIRAHA SOLUKHUMBU ' +
-    'SUNSARI SURKHET SYANGJA TANAHU TAPLEJUNG TEHRATHUM UDAYAPUR').split(' ');
+  var DISTRICTS = ['MORANG', 'SUNSARI'];
 
   var S = Object.assign({}, DEFAULT_SETTINGS, load('settings', {}));
-  // Older settings had a single firm; keep it first and add Dangal Traders after it.
-  if (!S.suppliers || !S.suppliers.length) {
-    S.suppliers = [{ name: S.ownName || 'KAMANA TRADERS', pan: S.ownPan || '300039166' }];
-  }
-  if (!S.suppliers.some(function (s) { return s.pan === '107353065'; }) && !S.dangalAdded) {
-    S.suppliers.push({ name: 'DANGAL BROTHERS', pan: '107353065' });
-  }
-  // Earlier versions called it "DANGAL TRADERS"; the firm is DANGAL BROTHERS.
+  if (!S.suppliers || !S.suppliers.length) S.suppliers = [{ name: S.ownName || 'KAMANA TRADERS', pan: S.ownPan || '300039166' }];
+  if (!S.suppliers.some(function (s) { return s.pan === '107353065'; }) && !S.dangalAdded) S.suppliers.push({ name: 'DANGAL BROTHERS', pan: '107353065' });
   S.suppliers.forEach(function (s) { if (s.pan === '107353065' && s.name === 'DANGAL TRADERS') s.name = 'DANGAL BROTHERS'; });
   S.dangalAdded = true;
+  delete S.challanDest;
   var sup = function (i) { return S.suppliers[i] || S.suppliers[0]; };
-  var C = load('customers', null) || DEFAULT_CUSTOMERS.slice();
-  var H = load('history', []);
-  var D = load('districts', null) || DEFAULT_DISTRICTS;
-  var SYNC = load('sync', null);
-  if (!load('customers', null)) save('customers', C);
 
-  var bills = [];
-  var destTouched = false;
-  var currentJob = null;
-  var running = false;
+  var C = load('customers', null) || DEFAULT_CUSTOMERS.slice();
+  C.forEach(function (c) { if (!c.id) c.id = 'p' + c.pan; });
+  var VC = load('vc', []);          // consignments from VCTS
+  var VD = load('vd', []);          // their bills
+  var VREAD = load('vdread', []);   // consignments whose bills were read
+  var FILES = load('files', {});    // cid -> {pdf, jpg}
+  var SYNC = load('sync', null);
+  (load('history', []) || []).forEach(function (h) {   // older versions kept a separate history
+    if (h.cid && (h.pdf || h.jpg) && !FILES[h.cid]) FILES[h.cid] = { pdf: h.pdf || '', jpg: h.jpg || '' };
+  });
+
+  var saveAll = function () { save('vc', VC); save('vd', VD); save('vdread', VREAD); save('files', FILES); };
+
+  /* ---------- font size ---------- */
+  var applyFont = function () { document.documentElement.style.zoom = String(S.fontScale || 1.15); };
+  applyFont();
+
+  /* ---------- confirm sheet ---------- */
+  var askCb = null;
+  var ask = function (title, bodyHtml, yes, no, cls) {
+    return new Promise(function (resolve) {
+      $('askTitle').textContent = title;
+      $('askBody').innerHTML = bodyHtml || '';
+      $('askYes').textContent = yes || 'हो';
+      $('askYes').className = 'btn ' + (cls || 'go');
+      $('askNo').textContent = no || 'होइन';
+      $('askNo').style.display = no === null ? 'none' : '';
+      askCb = resolve;
+      $('askModal').classList.add('on');
+    });
+  };
+  var closeAsk = function (v) { $('askModal').classList.remove('on'); var cb = askCb; askCb = null; if (cb) cb(v); };
+  $('askYes').addEventListener('click', function () { closeAsk(true); });
+  $('askNo').addEventListener('click', function () { closeAsk(false); });
 
   /* ---------- navigation ---------- */
+  var running = false;
+  var current = 'new';
   var go = function (name) {
-    if (running && name !== 'run') { name = 'run'; }
-    Array.prototype.forEach.call(document.querySelectorAll('.screen'), function (s) { s.classList.toggle('on', s.id === 'scr-' + name); });
-    Array.prototype.forEach.call(document.querySelectorAll('nav button'), function (b) {
-      var g = b.getAttribute('data-go');
-      b.classList.toggle('on', g === name || (name === 'review' && g === 'new') || (name === 'run' && g === 'new'));
-    });
-    if (name === 'history') renderHistory();
+    if (running && name !== 'run') name = 'run';
+    current = name;
+    each('.screen', function (s) { s.classList.toggle('on', s.id === 'scr-' + name); });
+    var tab = { review: 'new', run: lastTab, detail: 'list' }[name] || name;
+    each('nav button', function (b) { b.classList.toggle('on', b.getAttribute('data-go') === tab); });
+    if (name !== 'run' && name !== 'review') lastTab = tab;
+    if (name === 'list') renderList();
     if (name === 'customers') renderCustomers();
     if (name === 'settings') renderSettings();
     if (name === 'new') renderNew();
     window.scrollTo(0, 0);
   };
-  Array.prototype.forEach.call(document.querySelectorAll('nav button'), function (b) {
-    b.addEventListener('click', function () { go(b.getAttribute('data-go')); });
-  });
+  var lastTab = 'new';
+  each('nav button', function (b) { b.addEventListener('click', function () { go(b.getAttribute('data-go')); }); });
   window.onBack = function () {
+    if ($('askModal').classList.contains('on')) { closeAsk(false); return true; }
     if ($('custModal').classList.contains('on')) { $('custModal').classList.remove('on'); return true; }
-    if ($('scr-review').classList.contains('on')) { go('new'); return true; }
-    if (!$('scr-new').classList.contains('on') && !running) { go('new'); return true; }
+    if (running) return true;
+    if (current === 'review') { go('new'); return true; }
+    if (current === 'detail') { go('list'); return true; }
+    if (current !== 'new') { go('new'); return true; }
     return false;
   };
+  var showAdv = function () { each('.adv-only', function (e) { e.style.display = S.advanced ? '' : 'none'; }); };
 
-  // Goods only go to these districts.
-  var DEST_DISTRICTS = ['MORANG', 'SUNSARI'];
-  var districtOptions = function (sel, value) {
-    var list = DEST_DISTRICTS.slice();
-    if (value && list.indexOf(value) < 0) list.unshift(value);
-    sel.innerHTML = list.map(function (d) { return '<option' + (d === value ? ' selected' : '') + '>' + esc(d) + '</option>'; }).join('');
-  };
+  /* ---------- customers ---------- */
   var custById = function (id) { return C.find(function (c) { return c.id === id; }); };
+  var custByPan = function (pan) { return C.find(function (c) { return c.pan === pan; }); };
+  var isOwnPan = function (pan) { return S.suppliers.some(function (s) { return s.pan === pan; }); };
+  var sortedCustomers = function () {
+    return C.slice().sort(function (a, b) {
+      return String(b.last || '').localeCompare(String(a.last || '')) || (b.uses || 0) - (a.uses || 0) || String(a.name).localeCompare(String(b.name));
+    });
+  };
+  var findCustomers = function (q, max) {
+    q = String(q || '').trim();
+    var list = sortedCustomers();
+    if (!q) return list.slice(0, max);
+    if (/^[0-9]+$/.test(q)) {
+      var starts = list.filter(function (c) { return c.pan.indexOf(q) === 0; });
+      var has = list.filter(function (c) { return c.pan.indexOf(q) > 0; });
+      return starts.concat(has).slice(0, max);
+    }
+    var lq = q.toLowerCase();
+    return list.filter(function (c) { return String(c.name).toLowerCase().indexOf(lq) >= 0; }).slice(0, max);
+  };
+  var rebuildCustomers = function () {
+    var stats = {};
+    VD.forEach(function (d) {
+      if (d.t !== '1' || !/^[0-9]{9}$/.test(d.bp) || d.bp === d.sp || isOwnPan(d.bp)) return;
+      var s = stats[d.bp] || (stats[d.bp] = { n: 0, last: '', name: '', dist: '' });
+      s.n++;
+      if (String(d.d) >= s.last) { s.last = String(d.d); s.name = d.bn || s.name; s.dist = distOf(d.ds) || s.dist; }
+    });
+    Object.keys(stats).forEach(function (pan) {
+      var s = stats[pan], c = custByPan(pan);
+      if (!c) { c = { id: 'p' + pan, pan: pan, name: s.name, district: s.dist || 'MORANG' }; C.push(c); }
+      else if (!c.edited) { if (s.name) c.name = s.name; if (s.dist) c.district = s.dist; }
+      c.uses = s.n; c.last = s.last;
+    });
+    C = C.filter(function (c) { return !isOwnPan(c.pan); });
+    save('customers', C);
+  };
 
-  /* ---------- NEW consignment ---------- */
-  var newBill = function () { return { id: uid(), type: '1', sup: 0, cust: '', no: '', date: '', qty: '', amount: '', dest: '', destTouched: false }; };
+  /* ---------- consignment cache helpers ---------- */
+  var ongoing = function (r) { return r && (r.del === '1' || r.del === '3'); };
+  var vcById = function (id) { return VC.find(function (r) { return r.id === id; }); };
+  var docsOf = function (id) { return VD.filter(function (d) { return d.c === id; }); };
+  var mergeRows = function (rows, full) {
+    if (!rows) return;
+    if (full) { VC = rows.slice(); return; }
+    rows.forEach(function (r) {
+      var i = VC.findIndex(function (x) { return x.id === r.id; });
+      if (i >= 0) VC[i] = r; else VC.push(r);
+    });
+    VC.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+  };
+  var setDocs = function (cid, docs) {
+    if (!docs) return;
+    VD = VD.filter(function (d) { return d.c !== cid; }).concat(docs);
+    if (VREAD.indexOf(cid) < 0) VREAD.push(cid);
+  };
+  var statusChip = function (r) {
+    if (!r) return '';
+    if (r.lock === '2') return '<span class="chip warn">Lock बाँकी</span>';
+    if (r.del === '0') return '<span class="chip warn">Start बाँकी</span>';
+    if (ongoing(r)) return '<span class="chip">On going</span>';
+    if (r.del === '2') return '<span class="chip ok">Delivered</span>';
+    return '<span class="chip">' + esc(r.status || '') + '</span>';
+  };
+  var docLabel = function (d) { return (d.t === '2' ? 'चलान ' : 'बिल ') + d.n; };
+
+  /* =====================================================================
+     NEW consignment (also used for Add Mid-Consignment)
+     ===================================================================== */
+  var form = { mid: '', dest: '', destTouched: false, bills: [] };
+  var newBill = function () {
+    return { id: uid(), type: '1', sup: 0, cust: '', newPan: '', q: '', no: '', day: 0, qty: '', amount: '', place: '', placeTouched: false, byName: false };
+  };
+  var resetForm = function (mid) { form = { mid: mid || '', dest: '', destTouched: false, bills: [newBill()] }; };
+  resetForm();
+
+  var billDistrict = function (b) {
+    if (b.placeTouched && b.place) return b.place;
+    if (b.type === '1') {
+      var c = b.cust ? custById(b.cust) : null;
+      if (c && c.district) return c.district;
+    }
+    return form.dest || DISTRICTS[0];
+  };
+  var autoDest = function () {
+    for (var i = form.bills.length - 1; i >= 0; i--) {
+      var b = form.bills[i];
+      if (b.type === '2' || b.cust || b.newPan || b.placeTouched) return billDistrict(b);
+    }
+    return DISTRICTS[0];
+  };
 
   var renderNew = function () {
-    $('hdrSub').textContent = sup(0).name ? sup(0).name + ' • ' + S.vehicle : 'Consignment छिटो बनाउनुहोस्';
-    var hint = '';
+    $('hdrSub').textContent = sup(0).name + ' • ' + S.vehicle;
+    var top = '';
     if (!S.username || !App.hasPassword()) {
-      hint = '<div class="note warn">पहिले <b>सेटिङ</b> मा VCTS user name र password राख्नुहोस्, अनि “लगइन जाँच” थिच्नुहोस्।</div>';
-    } else if (!SYNC) {
-      hint = '<div class="note info">सेटिङ मा “लगइन जाँच र VCTS sync” एक पटक थिच्नुहोस्।</div>';
+      top += '<div class="note warn">App अझै सेटअप भएको छैन। छोरालाई <b>सेटिङ</b> मा VCTS लगइन राख्न लगाउनुहोस्।</div>';
     }
-    $('setupHint').innerHTML = hint;
-    if (!bills.length) bills.push(newBill());
-    setDest($('destDistrict').value || autoDistrict() || DEST_DISTRICTS[0]);
+    if (form.mid) {
+      var p = vcById(form.mid);
+      top += '<div class="note info"><b>Add Mid-Consignment</b><br>Consignment ' + esc(form.mid) + (p ? ' (' + esc(p.date) + ')' : '') +
+        '<br>गाडी र चालक उही रहन्छन्।<button class="btn plain" id="cancelMid">रद्द गर्नुहोस्</button></div>';
+    } else {
+      VC.filter(ongoing).slice(0, 3).forEach(function (r) {
+        var ds = docsOf(r.id);
+        top += '<div class="note warn"><b>पहिलेको consignment अझै बाटोमा (On going) छ</b><br>' + esc(r.id) + ' • ' + esc(r.date) +
+          (ds.length ? '<br>' + ds.map(function (d) { return esc(docLabel(d) + ' – ' + d.bn); }).join('<br>') : '') +
+          '<button class="btn warnb" data-open-cons="' + esc(r.id) + '">डेलिभरी सकाउनुहोस् (End Delivery)</button></div>';
+      });
+    }
+    $('newTop').innerHTML = top;
+    if (form.mid) $('cancelMid').onclick = function () { resetForm(); renderNew(); };
+    if (!form.destTouched) form.dest = autoDest();
+    renderDest();
     renderBills();
   };
 
-  var setDest = function (v) {
-    $('destDistrict').value = v;
-    var list = DEST_DISTRICTS.slice();
-    if (v && list.indexOf(v) < 0) list.push(v);
-    $('destSeg').innerHTML = list.map(function (d) {
-      return '<button data-dest="' + esc(d) + '" class="' + (d === v ? 'on' : '') + '">' + esc(d) + '</button>';
+  var renderDest = function () {
+    $('destSeg').innerHTML = DISTRICTS.map(function (d) {
+      return '<button data-dest="' + d + '" class="' + (d === form.dest ? 'on' : '') + '">' + d + '</button>';
     }).join('');
   };
   $('destSeg').addEventListener('click', function (e) {
     var b = e.target.closest('[data-dest]');
     if (!b) return;
-    destTouched = true;
-    setDest(b.getAttribute('data-dest'));
+    form.destTouched = true;
+    form.dest = b.getAttribute('data-dest');
+    renderDest();
+    renderBills();
   });
 
-  var autoDistrict = function () {
-    for (var i = bills.length - 1; i >= 0; i--) {
-      var b = bills[i];
-      if (b.type === '1' && b.cust) { var c = custById(b.cust); if (c && c.district) return c.district; }
-    }
-    return S.deptDistrict;
+  var seg = function (act, items, value) {
+    return '<div class="seg" data-seg="' + act + '">' + items.map(function (it) {
+      return '<button data-act="' + act + '" data-v="' + esc(it[0]) + '" class="' + (String(it[0]) === String(value) ? 'on' : '') + '">' + esc(it[1]) + '</button>';
+    }).join('') + '</div>';
   };
 
-  var billDestDefault = function (b) {
-    if (b.type === '2') return S.challanDest || '';
-    var c = custById(b.cust);
-    if (!c) return '';
-    return c.location || c.district || '';
+  var suggHtml = function (b) {
+    var q = String(b.q || '').trim();
+    var list = findCustomers(q, 6);
+    var h = '';
+    if (!q && list.length) h += '<div class="muted">हालै प्रयोग भएका:</div>';
+    h += list.map(function (c) {
+      return '<button data-pick="' + esc(c.id) + '">' + esc(c.name) + '<small>PAN ' + esc(c.pan) + ' • ' + esc(c.district || '') + '</small></button>';
+    }).join('');
+    if (/^[0-9]{9}$/.test(q) && !custByPan(q)) {
+      h += '<button class="newpan" data-newpan="' + q + '">नयाँ ग्राहक: PAN ' + q + '<small>नाम VCTS बाट आउँछ (जाँच गर्दा देखिन्छ)</small></button>';
+    } else if (q && !list.length) {
+      h += '<div class="muted">भेटिएन। PAN को ९ वटै अंक लेख्नुहोस्।</div>';
+    }
+    return h;
   };
 
   var renderBills = function () {
-    var custOpts = function (sel) {
-      return '<option value="">— ग्राहक छान्नुहोस् —</option>' +
-        C.map(function (c) { return '<option value="' + esc(c.id) + '"' + (c.id === sel ? ' selected' : '') + '>' + esc(c.name) + ' (' + esc(c.pan) + ')</option>'; }).join('') +
-        '<option value="__new">+ नयाँ ग्राहक…</option>';
-    };
-    var supControl = function (b) {
-      if (S.suppliers.length < 2) return '';
-      if (S.suppliers.length <= 3) {
-        return '<label>बिक्रेता (Supplier)</label><div class="seg">' + S.suppliers.map(function (s, k) {
-          return '<button data-act="sup' + k + '" class="' + (b.sup === k ? 'on' : '') + '">' + esc(s.name) + '</button>';
-        }).join('') + '</div>';
-      }
-      return '<label>बिक्रेता (Supplier)</label><select data-f="sup">' + S.suppliers.map(function (s, k) {
-        return '<option value="' + k + '"' + (b.sup === k ? ' selected' : '') + '>' + esc(s.name) + ' (' + esc(s.pan) + ')</option>';
-      }).join('') + '</select>';
-    };
-    $('billList').innerHTML = bills.map(function (b, i) {
+    var sups = S.suppliers.map(function (s, k) { return [k, s.name]; });
+    $('billList').innerHTML = form.bills.map(function (b, i) {
       if (!S.suppliers[b.sup]) b.sup = 0;
-      return '<div class="card" data-bill="' + b.id + '">' +
-        '<h3><span>बिल ' + (i + 1) + '</span>' + (bills.length > 1 ? '<button class="link bad" data-act="remove">हटाउनुहोस्</button>' : '') + '</h3>' +
-        '<div class="seg"><button data-act="type1" class="' + (b.type === '1' ? 'on' : '') + '">बिल</button><button data-act="type2" class="' + (b.type === '2' ? 'on' : '') + '">चलान</button></div>' +
-        supControl(b) +
-        (b.type === '1'
-          ? '<label>ग्राहक</label><select data-f="cust">' + custOpts(b.cust) + '</select>'
-          : '<div class="muted" style="margin-top:8px">चलान: ' + esc(sup(b.sup).name) + ' बाट ' + esc(sup(b.sup).name) + ' कै शाखामा (PAN ' + esc(sup(b.sup).pan) + ')</div>') +
-        '<div class="row"><div><label>' + (b.type === '1' ? 'बिल नं.' : 'चलान नं.') + '</label><input data-f="no" inputmode="numeric" value="' + esc(b.no) + '"></div>' +
-        '<div><label>मिति (खाली = आज)</label><input data-f="date" placeholder="आज" value="' + esc(b.date) + '"></div></div>' +
-        '<div class="row"><div><label>' + esc(S.unitType || 'इकाई') + '</label><input data-f="qty" inputmode="decimal" value="' + esc(b.qty) + '"></div>' +
-        '<div><label>रकम (VAT बाहेक)</label><input data-f="amount" inputmode="decimal" value="' + esc(b.amount) + '"></div></div>' +
-        '<label>बिलको गन्तव्य स्थान</label><input data-f="dest" value="' + esc(b.destTouched ? b.dest : billDestDefault(b)) + '">' +
+      var dist = billDistrict(b);
+      var h = '<div class="card" data-bill="' + b.id + '">' +
+        '<h3><span>' + (i + 1) + '. ' + (b.type === '2' ? 'चलान' : 'बिल') + '</span>' +
+        (form.bills.length > 1 ? '<button class="link bad" data-act="remove">हटाउनुहोस्</button>' : '') + '</h3>' +
+        seg('type', [['1', 'बिल'], ['2', 'चलान']], b.type);
+      if (S.suppliers.length > 1) h += '<label>बिक्रेता (Supplier)</label>' + seg('sup', sups, b.sup);
+      if (b.type === '1') {
+        h += '<label>ग्राहक</label>';
+        var c = b.cust ? custById(b.cust) : null;
+        if (c || b.newPan) {
+          h += '<div class="picked"><div><b>' + esc(c ? c.name : 'नयाँ ग्राहक') + '</b><small>PAN ' + esc(c ? c.pan : b.newPan) + '</small></div>' +
+            '<button class="link" data-act="unpick">बदल्नुहोस्</button></div>';
+        } else {
+          h += '<div class="search" data-search="1"><input data-f="q" ' + (b.byName ? '' : 'inputmode="numeric" ') + 'placeholder="' + (b.byName ? 'नाम लेख्नुहोस्' : 'PAN का अंक लेख्नुहोस्') + '" value="' + esc(b.q) + '" autocomplete="off">' +
+            '<button data-act="kbd">' + (b.byName ? '१२३' : 'नाम') + '</button></div><div class="sugg" data-sugg="' + b.id + '">' + suggHtml(b) + '</div>';
+        }
+        h += '<label>बिल कहाँ जाने</label>' + seg('place', DISTRICTS.map(function (d) { return [d, d]; }), dist);
+      } else {
+        h += '<label>गन्तव्य</label><div class="fixed">Mobile Sales</div>' +
+          seg('place', DISTRICTS.map(function (d) { return [d, titleCase(d)]; }), dist);
+        h += '<div class="muted" style="margin-top:6px">चलान: ' + esc(sup(b.sup).name) + ' बाट ' + esc(sup(b.sup).name) + ' कै Mobile Sales मा</div>';
+      }
+      h += '<div class="row"><div><label>' + (b.type === '2' ? 'चलान नं.' : 'बिल नं.') + '</label><input data-f="no" inputmode="numeric" value="' + esc(b.no) + '"></div>' +
+        '<div><label>' + esc(S.unitType || 'कार्टुन') + '</label><input data-f="qty" inputmode="decimal" value="' + esc(b.qty) + '"></div></div>' +
+        '<label>रकम (VAT बाहेक)</label><input data-f="amount" inputmode="decimal" value="' + esc(b.amount) + '">' +
+        '<div class="words" data-words="' + b.id + '">' + esc(npWords(b.amount)) + '</div>' +
+        '<label>' + (b.type === '2' ? 'चलानको' : 'बिलको') + ' मिति</label>' + seg('day', [[0, 'आज'], [1, 'हिजो'], [2, 'अस्ति']], b.day) +
         '</div>';
+      return h;
     }).join('');
   };
 
-  $('billList').addEventListener('click', function (e) {
-    var btn = e.target.closest('button[data-act]');
-    if (!btn) return;
-    var card = btn.closest('[data-bill]');
-    var b = bills.find(function (x) { return x.id === card.getAttribute('data-bill'); });
-    var act = btn.getAttribute('data-act');
-    if (act === 'remove') bills = bills.filter(function (x) { return x !== b; });
-    if (act === 'type1') b.type = '1';
-    if (act === 'type2') b.type = '2';
-    if (act.indexOf('sup') === 0) b.sup = Number(act.slice(3)) || 0;
-    if (!destTouched) setDest(autoDistrict());
-    renderBills();
-  });
-  var onBillInput = function (e) {
-    var el = e.target, f = el.getAttribute('data-f');
-    if (!f) return;
+  var billOf = function (el) {
     var card = el.closest('[data-bill]');
-    var b = bills.find(function (x) { return x.id === card.getAttribute('data-bill'); });
-    el.classList.remove('err');
-    if (f === 'cust') {
-      if (el.value === '__new') { el.value = b.cust; openCustomer(null, function (c) { b.cust = c.id; refreshAfterCust(); }); return; }
-      b.cust = el.value;
-      refreshAfterCust();
+    return card ? form.bills.find(function (x) { return x.id === card.getAttribute('data-bill'); }) : null;
+  };
+  $('billList').addEventListener('click', function (e) {
+    var pick = e.target.closest('[data-pick]'), np = e.target.closest('[data-newpan]');
+    if (pick || np) {
+      var bb = billOf(e.target);
+      if (pick) { bb.cust = pick.getAttribute('data-pick'); bb.newPan = ''; }
+      else { bb.newPan = np.getAttribute('data-newpan'); bb.cust = ''; }
+      bb.q = ''; bb.placeTouched = false;
+      if (!form.destTouched) form.dest = autoDest();
+      renderDest(); renderBills();
       return;
     }
-    if (f === 'dest') { b.dest = el.value; b.destTouched = true; return; }
-    if (f === 'sup') { b.sup = Number(el.value) || 0; renderBills(); return; }
-    b[f] = el.value.trim();
-  };
-  var refreshAfterCust = function () {
-    if (!destTouched) setDest(autoDistrict());
+    var btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    var b = billOf(btn);
+    var act = btn.getAttribute('data-act'), v = btn.getAttribute('data-v');
+    if (act === 'remove') form.bills = form.bills.filter(function (x) { return x !== b; });
+    if (act === 'type') { b.type = v; b.placeTouched = false; }
+    if (act === 'sup') b.sup = Number(v) || 0;
+    if (act === 'place') { b.place = v; b.placeTouched = true; }
+    if (act === 'day') b.day = Number(v) || 0;
+    if (act === 'unpick') { b.cust = ''; b.newPan = ''; b.q = ''; }
+    if (act === 'kbd') { b.byName = !b.byName; b.q = ''; }
+    if (!form.destTouched) form.dest = autoDest();
+    renderDest();
     renderBills();
-  };
-  $('billList').addEventListener('change', onBillInput);
-  $('billList').addEventListener('input', function (e) { if (e.target.tagName === 'INPUT') onBillInput(e); });
-  $('addBill').addEventListener('click', function () { bills.push(newBill()); renderBills(); });
+    if (act === 'kbd' || act === 'unpick') {
+      var inp = document.querySelector('[data-bill="' + b.id + '"] input[data-f=q]');
+      if (inp) inp.focus();
+    }
+  });
+  $('billList').addEventListener('input', function (e) {
+    var el = e.target, f = el.getAttribute('data-f');
+    if (!f) return;
+    var b = billOf(el);
+    el.classList.remove('err');
+    if (f === 'q') {
+      b.q = el.value;
+      var box = document.querySelector('[data-sugg="' + b.id + '"]');
+      if (box) box.innerHTML = suggHtml(b);
+      return;
+    }
+    b[f] = el.value.trim();
+    if (f === 'amount') {
+      var w = document.querySelector('[data-words="' + b.id + '"]');
+      if (w) w.textContent = npWords(b.amount);
+    }
+  });
+  $('addBill').addEventListener('click', function () {
+    form.bills.push(newBill());
+    renderBills();
+    var cards = document.querySelectorAll('#billList [data-bill]');
+    if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.addEventListener('click', function (e) {
+    var oc = e.target.closest('[data-open-cons]');
+    if (oc && !running) openDetail(oc.getAttribute('data-open-cons'));
+  });
 
   var validate = function () {
     var errs = [];
-    Array.prototype.forEach.call(document.querySelectorAll('#billList [data-bill]'), function (card, i) {
-      var b = bills[i];
-      var mark = function (f, msg) { var el = card.querySelector('[data-f=' + f + ']'); if (el) el.classList.add('err'); errs.push('बिल ' + (i + 1) + ': ' + msg); };
-      if (b.type === '1' && !custById(b.cust)) mark('cust', 'ग्राहक छान्नुहोस्');
-      if (b.type === '1' && custById(b.cust) && custById(b.cust).pan === sup(b.sup).pan) mark('cust', 'बिलमा बिक्रेता र खरिदकर्ता एउटै हुन मिल्दैन');
-      if (!/^[1-9][0-9]*$/.test(b.no)) mark('no', 'नम्बर अंकमा मात्र, ० बाट सुरु नहुने');
-      if (b.date && !/^20[0-9]{2}-[01][0-9]-[0-3][0-9]$/.test(b.date)) mark('date', 'मिति 2083-06-20 जस्तो लेख्नुहोस्');
-      if (!(Number(b.qty) > 0)) mark('qty', 'संख्या लेख्नुहोस्');
-      if (!(Number(b.amount) > 0)) mark('amount', 'रकम लेख्नुहोस्');
+    var cards = document.querySelectorAll('#billList [data-bill]');
+    form.bills.forEach(function (b, i) {
+      var card = cards[i];
+      var mark = function (sel, msg) { var el = card && card.querySelector(sel); if (el) el.classList.add('err'); errs.push((i + 1) + '. ' + msg); };
+      var c = b.cust ? custById(b.cust) : null;
+      if (b.type === '1' && !c && !b.newPan) mark('.search', 'ग्राहक छान्नुहोस् (PAN लेखेर)');
+      var buyerPan = b.type === '1' ? (c ? c.pan : b.newPan) : sup(b.sup).pan;
+      if (b.type === '1' && buyerPan && buyerPan === sup(b.sup).pan) mark('.picked', 'बिलमा बिक्रेता र खरिदकर्ता एउटै हुन मिल्दैन');
+      if (!/^[1-9][0-9]*$/.test(b.no)) mark('input[data-f=no]', 'नम्बर लेख्नुहोस् (अंकमा मात्र, ० बाट सुरु नहुने)');
+      if (!(Number(b.qty) > 0)) mark('input[data-f=qty]', (S.unitType || 'कार्टुन') + ' संख्या लेख्नुहोस्');
+      if (!(Number(b.amount) > 0)) mark('input[data-f=amount]', 'रकम लेख्नुहोस्');
     });
     var nums = {};
-    bills.forEach(function (b, i) { var k = b.type + ':' + b.no; if (b.no && nums[k]) errs.push('बिल ' + (i + 1) + ': एउटै नम्बर दुई पटक'); nums[k] = 1; });
-    if (!S.username || !App.hasPassword()) errs.push('सेटिङ मा user name / password छैन');
-    if (!S.vehicle || !S.driverMobile) errs.push('सेटिङ मा गाडी / चालक छैन');
-    if (S.suppliers.some(function (s) { return !s.name || !/^[0-9]{9}$/.test(s.pan); })) errs.push('सेटिङ मा बिक्रेताको नाम / PAN मिलेन');
+    form.bills.forEach(function (b, i) {
+      var k = sup(b.sup).pan + ':' + b.type + ':' + b.no;
+      if (b.no && nums[k]) errs.push((i + 1) + '. एउटै नम्बर दुई पटक लेखियो');
+      nums[k] = 1;
+    });
+    if (!S.username || !App.hasPassword()) errs.push('सेटिङ मा VCTS लगइन छैन (छोरालाई सोध्नुहोस्)');
+    if (!form.mid && (!S.vehicle || !S.driverMobile)) errs.push('सेटिङ मा गाडी / चालक छैन');
     return errs;
   };
 
   var buildJob = function () {
-    return {
+    var pans = [];
+    var job = {
+      mid: form.mid,
       vehicle: S.vehicle.trim().toUpperCase().replace(/\s+/g, ''),
       driverMobile: S.driverMobile.trim(),
       deptDistrict: S.deptDistrict.trim(), deptLocation: S.deptLocation.trim(),
-      destDistrict: $('destDistrict').value, destExtra: $('destExtra').value.trim(),
-      bills: bills.map(function (b) {
-        var c = b.type === '1' ? custById(b.cust) : null;
-        var s = sup(b.sup);
-        return {
-          docType: b.type, docNo: b.no, docDate: b.date,
-          goods: S.goods, unitType: S.unitType,
+      destDistrict: form.dest,
+      bills: form.bills.map(function (b) {
+        var s = sup(b.sup), c = b.type === '1' && b.cust ? custById(b.cust) : null;
+        var dist = billDistrict(b);
+        var bill = {
+          docType: b.type, docNo: b.no, day: b.day, goods: S.goods, unitType: S.unitType,
           qty: Number(b.qty), amount: Number(b.amount),
           supplierPan: s.pan, supplierName: s.name, supplierIsDefault: b.sup === 0,
-          buyerPan: c ? c.pan : s.pan, buyerName: c ? c.name : s.name,
-          destLocation: (b.destTouched ? b.dest : billDestDefault(b)) || $('destDistrict').value,
+          buyerPan: b.type === '1' ? (c ? c.pan : b.newPan) : s.pan,
+          buyerName: b.type === '1' ? (c ? c.name : '') : s.name,
+          isNew: b.type === '1' && !c,
+          district: dist,
+          destLocation: dist, destBranch: 'Mobile Sales', destPlace: titleCase(dist),
           remarks: ''
         };
+        [bill.buyerPan, bill.supplierPan].forEach(function (p) { if (pans.indexOf(p) < 0) pans.push(p); });
+        return bill;
       })
     };
+    job.pans = pans;
+    return job;
   };
 
-  $('toReview').addEventListener('click', function () {
+  var currentJob = null, checkRes = null;
+  $('toCheck').addEventListener('click', function () {
     var errs = validate();
-    if (errs.length) { alert(errs.join('\n')); return; }
+    if (errs.length) { ask('केही कुरा मिलेन', '<div class="note bad">' + errs.map(esc).join('<br>') + '</div>', 'ठिक छ', null, 'primary'); return; }
     currentJob = buildJob();
-    var j = currentJob;
-    $('revFixed').innerHTML =
-      '<dt>गाडी</dt><dd>' + esc(j.vehicle) + '</dd>' +
-      '<dt>चालक</dt><dd>' + esc(j.driverMobile) + '</dd>' +
-      '<dt>कहाँबाट</dt><dd>' + esc(j.deptDistrict + ', ' + j.deptLocation) + '</dd>' +
-      '<dt>कहाँसम्म</dt><dd>' + esc(j.destDistrict + (j.destExtra ? ', ' + j.destExtra : '')) + '</dd>' +
-      '<dt>सामान</dt><dd>' + esc(S.goods + ' • ' + S.unitType) + '</dd>' +
-      '<dt>मिति</dt><dd>आज (VCTS अनुसार)</dd>';
-    var tq = 0, ta = 0;
-    $('revBills').innerHTML = '<tr><th>प्रकार / नं.</th><th>खरिदकर्ता</th><th class="num">' + esc(S.unitType) + '</th><th class="num">रकम</th></tr>' +
-      j.bills.map(function (b) {
-        tq += b.qty; ta += b.amount;
-        return '<tr><td>' + (b.docType === '1' ? 'बिल' : 'चलान') + ' ' + esc(b.docNo) + (b.docDate ? '<div class="muted">' + esc(b.docDate) + '</div>' : '') + '</td>' +
-          '<td>' + esc(b.buyerName) + '<div class="muted">' + esc(b.buyerPan) + ' • ' + esc(b.destLocation) + '</div>' +
-          '<div style="margin-top:3px"><span class="chip ' + (b.supplierIsDefault ? '' : 'warn') + '">बिक्रेता: ' + esc(b.supplierName) + '</span></div></td>' +
-          '<td class="num">' + esc(b.qty) + '</td><td class="num">' + money(b.amount) + '</td></tr>';
-      }).join('');
-    $('revTotal').textContent = tq + ' ' + S.unitType + ' • Rs ' + money(ta);
-    go('review');
+    startTask('VCTS सँग जाँच्दै…', function () { App.check(JSON.stringify(currentJob)); });
   });
-  $('backEdit').addEventListener('click', function () { go('new'); });
 
-  /* ---------- RUN ---------- */
+  /* =====================================================================
+     FINAL REVIEW
+     ===================================================================== */
+  var perCartonRange = function () {
+    var v = VD.filter(function (d) { return d.t === '1' && d.q > 0 && d.a > 0; }).map(function (d) { return d.a / d.q; }).sort(function (a, b) { return a - b; });
+    if (v.length < 20) return { lo: 1000, hi: 25000 };
+    return { lo: Math.min(1000, v[0] * 0.7), hi: Math.max(25000, v[v.length - 1] * 1.3) };
+  };
+  var dayName = ['आज', 'हिजो', 'अस्ति'];
+
+  var onCheckDone = function (e) {
+    checkRes = e;
+    mergeRows(e.list, false);
+    saveAll();
+    var j = currentJob;
+    var blocks = [], warns = [];
+    var info = e.info || {};
+    var dates = e.dates || {};
+    var range = perCartonRange();
+    j.bills.forEach(function (b, i) {
+      b.docDate = dates[String(b.day)] || info.today;
+      b.blocks = []; b.warns = [];
+      var pr = (e.pans || {})[b.buyerPan] || {};
+      b.vctsNames = pr.names || [];
+      if (!pr.ok || !b.vctsNames.length) {
+        b.blocks.push('PAN ' + b.buyerPan + ' VCTS मा भेटिएन। PAN फेरि हेर्नुहोस्।');
+      } else if (b.vctsNames.indexOf(b.buyerName) < 0) {
+        b.savedName = b.buyerName;
+        b.buyerName = b.vctsNames[0];
+      }
+      var sp = (e.pans || {})[b.supplierPan] || {};
+      if (!sp.ok) b.warns.push('बिक्रेताको PAN ' + b.supplierPan + ' VCTS मा भेटिएन।');
+      if (info.docFrom && info.docTo && (b.docDate < info.docFrom || b.docDate > info.docTo)) {
+        b.blocks.push('मिति ' + b.docDate + ' VCTS ले लिँदैन (' + info.docFrom + ' देखि ' + info.docTo + ' सम्म मात्र)।');
+      }
+      var pc = b.amount / b.qty;
+      b.perCarton = pc;
+      if (pc < range.lo || pc > range.hi) {
+        b.warns.push('प्रति ' + (j.bills[i].unitType || 'कार्टुन') + ' रु ' + money(pc) + ' — सामान्य भन्दा धेरै ' + (pc < range.lo ? 'कम' : 'बढी') + '। रकम र संख्या फेरि हेर्नुहोस्।');
+      }
+      var fy = fyOf(b.docDate);
+      var dup = VD.find(function (d) { return d.sp === b.supplierPan && d.t === b.docType && String(d.n) === String(b.docNo) && fyOf(d.d) === fy; });
+      if (dup) b.warns.push((b.docType === '2' ? 'चलान' : 'बिल') + ' नं. ' + b.docNo + ' पहिले नै VCTS मा छ (Consignment ' + dup.c + ', ' + dup.d + ')।');
+      blocks = blocks.concat(b.blocks.map(function (m) { return (i + 1) + '. ' + m; }));
+      warns = warns.concat(b.warns.map(function (m) { return (i + 1) + '. ' + m; }));
+    });
+    if (!j.mid && e.driver && !e.driver.ok) blocks.push('चालक ' + j.driverMobile + ' VCTS मा भेटिएन: ' + (e.driver.msg || ''));
+    j.driverName = e.driver && e.driver.ok ? e.driver.name : '';
+    if (j.mid) {
+      var mi = e.midInfo || {};
+      var today = mi.today || info.today;
+      j.departDate = (mi.departFrom && today >= mi.departFrom && (!mi.departTo || today <= mi.departTo)) ? today : (mi.departFrom || today);
+      j.departNote = j.departDate !== info.today ? 'VCTS ले Mid-Consignment मा ' + j.departDate + ' देखि मात्र मिति दिन्छ।' : '';
+      var parent = vcById(j.mid);
+      if (parent && !ongoing(parent)) blocks.push('Consignment ' + j.mid + ' अब On going छैन, त्यसैले Mid-Consignment थप्न मिल्दैन।');
+    } else {
+      j.departDate = info.today;
+    }
+    var onRoad = j.mid ? [] : VC.filter(ongoing);
+    j.blocks = blocks; j.warns = warns; j.onRoad = onRoad;
+    renderReview();
+    go('review');
+  };
+
+  var renderReview = function () {
+    var j = currentJob;
+    var h = '';
+    j.onRoad.forEach(function (r) {
+      h += '<div class="note warn"><b>पहिलेको consignment ' + esc(r.id) + ' अझै On going छ।</b><br>पहिले यसको डेलिभरी सकाउनुहोस्।' +
+        '<button class="btn warnb" data-open-cons="' + esc(r.id) + '">डेलिभरी सकाउनुहोस् (End Delivery)</button></div>';
+    });
+    if (j.blocks.length) h += '<div class="note bad"><b>यो पठाउन मिल्दैन:</b><br>' + j.blocks.map(esc).join('<br>') + '</div>';
+    h += '<div class="card"><dl class="kv">' +
+      (j.mid ? '<dt>प्रकार</dt><dd>Mid-Consignment (' + esc(j.mid) + ')</dd>' : '') +
+      (j.mid ? '' : '<dt>गाडी</dt><dd>' + esc(j.vehicle) + '</dd><dt>चालक</dt><dd>' + esc(j.driverName || j.driverMobile) + '</dd>') +
+      '<dt>कहाँबाट</dt><dd>' + esc(j.deptDistrict + ', ' + j.deptLocation) + '</dd>' +
+      '<dt>अन्तिम गन्तव्य</dt><dd>' + esc(j.destDistrict) + '</dd>' +
+      '<dt>मिति</dt><dd>' + esc(j.departDate || '') + '</dd></dl>' +
+      (j.departNote ? '<div class="warnline">' + esc(j.departNote) + '</div>' : '') + '</div>';
+    var tq = 0, ta = 0;
+    j.bills.forEach(function (b, i) {
+      tq += b.qty; ta += b.amount;
+      h += '<div class="card rbill"><div class="rhead"><b>' + (i + 1) + '. ' + (b.docType === '2' ? 'चलान' : 'बिल') + ' ' + esc(b.docNo) + '</b>' +
+        '<span class="chip ' + (b.supplierIsDefault ? '' : 'warn') + '">' + esc(b.supplierName) + '</span></div>' +
+        '<div class="rline"><span>' + (b.docType === '2' ? 'कसलाई' : 'खरिदकर्ता') + '</span><b>' + esc(b.buyerName || '?') + (b.vctsNames.length ? ' ✓' : '') + '</b></div>' +
+        '<div class="muted" style="text-align:right">PAN ' + esc(b.buyerPan) + (b.savedName ? ' • पहिले: ' + esc(b.savedName) : '') + (b.isNew ? ' • नयाँ ग्राहक' : '') + '</div>' +
+        '<div class="rline"><span>कहाँ</span><b>' + esc(b.docType === '2' ? 'Mobile Sales-' + b.destPlace : b.destLocation) + '</b></div>' +
+        '<div class="rline"><span>मिति</span><b>' + esc(b.docDate) + ' (' + dayName[b.day] + ')</b></div>' +
+        '<div class="rline"><span>' + esc(b.unitType) + '</span><b>' + esc(b.qty) + '</b></div>' +
+        '<div class="rline"><span>रकम</span><b>रु ' + money(b.amount) + '</b></div>' +
+        '<div class="words">' + esc(npWords(b.amount)) + '</div>' +
+        '<div class="muted">प्रति ' + esc(b.unitType) + ' रु ' + money(b.perCarton) + '</div>' +
+        b.warns.map(function (w) { return '<div class="warnline">⚠ ' + esc(w) + '</div>'; }).join('') +
+        b.blocks.map(function (w) { return '<div class="badline">✕ ' + esc(w) + '</div>'; }).join('') +
+        '</div>';
+    });
+    h += '<div class="card"><div class="tot"><span>जम्मा</span><span>' + tq + ' ' + esc(S.unitType) + '</span></div>' +
+      '<div class="tot" style="margin-top:6px"><span></span><span>रु ' + money(ta) + '</span></div>' +
+      '<div class="words" style="text-align:right">' + esc(npWords(ta)) + '</div></div>';
+    $('reviewBody').innerHTML = h;
+    $('confirmRun').disabled = j.blocks.length > 0;
+    $('confirmRun').textContent = j.mid ? '✓ सबै ठीक छ — Mid-Consignment पठाउनुहोस्' : '✓ सबै ठीक छ — VCTS मा पठाउनुहोस्';
+    showAdv();
+  };
+
+  $('backEdit').addEventListener('click', function () { go('new'); });
+  $('confirmRun').addEventListener('click', function () {
+    var j = currentJob;
+    if (!j || j.blocks.length) return;
+    var list = j.warns.concat(j.onRoad.map(function (r) { return 'Consignment ' + r.id + ' को डेलिभरी अझै सकिएको छैन।'; }));
+    var body = (list.length ? '<div class="note warn"><b>चेतावनी:</b><br>' + list.map(esc).join('<br>') + '</div>' : '') +
+      '<p>VCTS मा <b>Save → Lock Consignment → Start Vehicle</b> हुन्छ। त्यसपछि सच्याउन गाह्रो हुन्छ।</p>';
+    ask(list.length ? 'चेतावनी छ — फेरि पनि पठाउने?' : 'VCTS मा पठाउने?', body, 'हो, पठाउनुहोस्', 'होइन, सच्याउँछु', list.length ? 'warnb' : 'go').then(function (yes) {
+      if (yes) startTask(j.mid ? 'Mid-Consignment बनाउँदै…' : 'VCTS मा consignment बनाउँदै…', function () { App.run(JSON.stringify(j), false); });
+    });
+  });
+  $('dryRun').addEventListener('click', function () {
+    var j = currentJob;
+    if (!j) return;
+    startTask('Test: फारम भर्दै (save हुँदैन)…', function () { App.run(JSON.stringify(j), true); });
+  });
+
+  /* =====================================================================
+     RUNNING TASKS
+     ===================================================================== */
   var steps = {};
-  var startRun = function (dry) {
-    if (!currentJob) return;
+  var taskTitle = '';
+  var startTask = function (title, fn) {
+    if (running) return;
     running = true;
     steps = {};
+    taskTitle = title;
     $('steps').innerHTML = '';
     $('runResult').innerHTML = '';
-    $('runTitle').textContent = dry ? 'Test: फारम भर्दै (save हुँदैन)…' : 'VCTS मा consignment बनाउँदै…';
+    $('runTitle').textContent = title;
     $('stopRun').style.display = '';
-    $('showSite').style.display = '';
     go('run');
-    App.run(JSON.stringify(currentJob), !!dry);
+    showAdv();
+    fn();
   };
-  $('confirmRun').addEventListener('click', function () { startRun(false); });
-  $('dryRun').addEventListener('click', function () { startRun(true); });
-  $('stopRun').addEventListener('click', function () { if (confirm('रोक्ने हो?')) App.stop(); });
+  $('stopRun').addEventListener('click', function () { ask('रोक्ने हो?', '', 'हो, रोक्नुहोस्', 'होइन', 'warnb').then(function (y) { if (y) App.stop(); }); });
   $('showSite').addEventListener('click', function () { App.showSite(true); });
 
   var setStep = function (e) {
     var li = steps[e.id];
     if (!li) { li = document.createElement('li'); steps[e.id] = li; $('steps').appendChild(li); }
     var icon = e.state === 'run' ? '<span class="spin"></span>' : e.state === 'ok' ? '✅' : e.state === 'fail' ? '❌' : '•';
-    li.innerHTML = '<span class="st">' + icon + '</span><span>' + esc(e.label || li.getAttribute('data-label') || '') +
-      (e.detail ? '<div class="d">' + esc(e.detail) + '</div>' : '') + '</span>';
     if (e.label) li.setAttribute('data-label', e.label);
+    li.innerHTML = '<span class="st">' + icon + '</span><span>' + esc(li.getAttribute('data-label') || '') +
+      (e.detail ? '<div class="d">' + esc(e.detail) + '</div>' : '') + '</span>';
   };
   var finishSteps = function (state) {
     Object.keys(steps).forEach(function (k) { if (steps[k].querySelector('.spin')) setStep({ id: k, state: state }); });
   };
 
-  var addHistory = function (h) { H.unshift(h); if (H.length > 300) H.length = 300; save('history', H); };
-
-  var outputBlock = function (e) {
+  var outputBlock = function (cid, pdf, jpg, gallery) {
     var h = '';
-    if (e.jpg) {
-      h += '<img class="shot" src="file://' + esc(e.jpg) + '?t=' + Date.now() + '" alt="" data-open="' + esc(e.jpg) + '" onerror="this.style.display=\'none\'">';
-      h += '<div class="actions"><button class="btn go" data-share="' + esc(e.jpg) + '" data-cid="' + esc(e.consignmentId) + '">फोटो Share (WhatsApp)</button></div>';
-      if (e.gallery) h += '<div class="muted" style="margin-top:8px">फोटो Gallery को <b>VCTS</b> album मा पनि save भयो।</div>';
+    if (jpg) {
+      h += '<img class="shot" src="file://' + esc(jpg) + '?t=' + Date.now() + '" alt="" data-open="' + esc(jpg) + '" onerror="this.style.display=\'none\'">';
+      h += '<div class="actions"><button class="btn go" data-share="' + esc(jpg) + '" data-cid="' + esc(cid) + '">फोटो Share (WhatsApp)</button></div>';
+      if (gallery) h += '<div class="muted" style="margin-top:8px">फोटो Gallery को <b>VCTS</b> album मा पनि save भयो।</div>';
     }
-    if (e.pdf) {
-      h += '<div class="actions"><button class="btn plain" data-open="' + esc(e.pdf) + '">PDF खोल्नुहोस्</button>' +
-        '<button class="btn plain" data-share="' + esc(e.pdf) + '" data-cid="' + esc(e.consignmentId) + '">PDF Share</button></div>';
+    if (pdf) {
+      h += '<div class="actions"><button class="btn plain" data-open="' + esc(pdf) + '">PDF खोल्नुहोस्</button>' +
+        '<button class="btn plain" data-share="' + esc(pdf) + '" data-cid="' + esc(cid) + '">PDF Share</button></div>';
     }
     return h;
   };
@@ -545,16 +882,21 @@
     if (o) App.openFile(o.getAttribute('data-open'));
     var s = e.target.closest('[data-share]');
     if (s) App.shareFile(s.getAttribute('data-share'), 'VCTS Consignment ' + s.getAttribute('data-cid'));
-    var r = e.target.closest('[data-reprint]');
-    if (r) {
-      if (running) return;
-      running = true; steps = {}; $('steps').innerHTML = ''; $('runResult').innerHTML = '';
-      $('runTitle').textContent = 'PDF फेरि निकाल्दै…';
-      $('stopRun').style.display = ''; $('showSite').style.display = '';
-      go('run');
-      App.reprint(r.getAttribute('data-reprint'));
-    }
   });
+
+  var lastError = null;
+  var sendSon = function () {
+    var e = lastError || {};
+    var j = currentJob;
+    var lines = ['VCTS Helper मा समस्या', 'समय: ' + new Date().toLocaleString(), 'App: ' + (App.version() || ''),
+      'काम: ' + taskTitle, 'कहाँ: ' + (e.stage || ''), 'त्रुटि: ' + (e.message || '')];
+    if (e.consignmentId) lines.push('Consignment: ' + e.consignmentId);
+    if (j && j.bills && /consignment|Mid|Test|जाँच/.test(taskTitle)) {
+      lines.push('बिलहरू:');
+      j.bills.forEach(function (b) { lines.push('- ' + (b.docType === '2' ? 'चलान ' : 'बिल ') + b.docNo + ', ' + b.supplierName + ' → ' + (b.buyerName || b.buyerPan) + ' (' + b.buyerPan + '), ' + b.qty + ' ' + b.unitType + ', रु ' + b.amount); });
+    }
+    App.sendWhatsApp(S.sonNumber || '', lines.join('\n'));
+  };
 
   window.onEvent = function (e) {
     if (e.type === 'step') { setStep(e); return; }
@@ -562,97 +904,293 @@
       running = false;
       finishSteps('ok');
       $('stopRun').style.display = 'none';
-      if (e.mode === 'sync') { onSyncDone(e.info || {}); go('settings'); return; }
-      if (e.mode === 'dry') {
-        $('runTitle').textContent = 'Test सकियो — केही save भएको छैन';
-        $('runResult').innerHTML = '<div class="note ok">VCTS फारम भरियो (पहिलो बिल मात्र)। “VCTS page हेर्नुहोस्” थिचेर हेर्नुहोस्। त्यहाँ Save <b>नथिच्नुहोस्</b> — app मा फर्केपछि फारम आफैं हट्छ।</div>' +
-          '<button class="btn primary" id="dryBack">ठिक छ, फर्कनुहोस्</button>';
-        $('dryBack').onclick = function () { go('review'); };
-        return;
-      }
-      if (e.mode === 'reprint') {
-        $('runTitle').textContent = 'PDF तयार भयो';
-        $('runResult').innerHTML = '<div class="card"><div class="muted">Consignment ID</div><div class="big">' + esc(e.consignmentId) + '</div>' +
-          (e.pdf ? outputBlock(e) : '<div class="note warn">' + esc(e.message || '') + '</div>') + '</div>';
-        H.forEach(function (h) { if (h.cid === e.consignmentId && e.pdf) { h.pdf = e.pdf; h.jpg = e.jpg || ''; } });
-        save('history', H);
-        return;
-      }
-      $('runTitle').textContent = 'सकियो ✓';
-      var j = currentJob || { bills: [] };
-      addHistory({ time: Date.now(), cid: e.consignmentId, pdf: e.pdf || '', jpg: e.jpg || '', status: 'ok', bills: j.bills, dest: j.destDistrict });
-      $('runResult').innerHTML = '<div class="card"><div class="muted">Consignment ID</div><div class="big">' + esc(e.consignmentId) + '</div>' +
-        '<div class="muted" style="margin-top:4px">Locked र vehicle started</div>' +
-        (e.pdf ? outputBlock(e) : '<div class="note warn">' + esc(e.message || 'PDF बनेन — इतिहासबाट फेरि प्रयास गर्नुहोस्।') + '</div>') +
-        '</div><button class="btn plain" id="newAfter">नयाँ consignment</button>';
-      $('newAfter').onclick = function () { bills = []; destTouched = false; $('destExtra').value = ''; $('destDistrict').value = ''; currentJob = null; go('new'); };
+      var m = e.mode;
+      if (m === 'check') return onCheckDone(e);
+      if (m === 'real') return onRealDone(e);
+      if (m === 'dry') return onDryDone(e);
+      if (m === 'sync' || m === 'refresh') return onDataDone(e);
+      if (m === 'end' || m === 'action') return onConsDone(e);
+      if (m === 'reprint') return onReprintDone(e);
       return;
     }
     if (e.type === 'error') {
       running = false;
       finishSteps('fail');
       $('stopRun').style.display = 'none';
-      if (e.mode === 'sync') { $('syncResult').innerHTML = '<div class="note bad">' + esc(e.message) + '</div>'; go('settings'); return; }
-      $('runTitle').textContent = e.stopped ? 'रोकियो' : 'समस्या आयो';
-      var msg = '<div class="note bad">' + esc(e.message) + '</div>';
-      if (e.consignmentId) {
-        msg += '<div class="note warn">Consignment <b>' + esc(e.consignmentId) + '</b> VCTS मा बनिसकेको छ। फेरि नबनाउनुहोस् — “VCTS page हेर्नुहोस्” थिचेर बाँकी काम (lock / start / print) त्यहीँ सक्नुहोस्।</div>';
-        if (e.mode === 'real') addHistory({ time: Date.now(), cid: e.consignmentId, pdf: '', status: 'partial', note: e.message, bills: (currentJob || {}).bills || [], dest: (currentJob || {}).destDistrict });
-      } else if (e.mode === 'real' && !e.unknown) {
-        msg += '<div class="muted">VCTS मा केही save भएको छैन। सच्याएर फेरि प्रयास गर्न सक्नुहुन्छ।</div>';
-      } else if (e.unknown) {
-        msg += '<div class="note warn">VCTS ले जवाफ दिएन। फेरि प्रयास गर्नु अघि VCTS को Consignment list हेर्नुहोस्।</div>';
-      }
-      $('runResult').innerHTML = msg + '<button class="btn plain" id="errBack">फर्कनुहोस्</button>';
-      $('errBack').onclick = function () { go(e.consignmentId ? 'history' : 'review'); };
-      return;
+      onError(e);
     }
   };
 
-  /* ---------- HISTORY ---------- */
-  var renderHistory = function () {
-    if (!H.length) { $('histList').innerHTML = '<div class="empty">अहिलेसम्म केही छैन।</div>'; return; }
-    $('histList').innerHTML = H.map(function (h) {
-      var d = new Date(h.time);
-      var tq = 0, ta = 0;
-      (h.bills || []).forEach(function (b) { tq += Number(b.qty) || 0; ta += Number(b.amount) || 0; });
-      var hasPdf = h.pdf && App.fileExists(h.pdf);
-      var hasJpg = h.jpg && App.fileExists(h.jpg);
-      return '<div class="card"><div class="list-item"><div>' +
-        '<div style="font-weight:700">' + esc(h.cid || '—') + '</div>' +
-        '<div class="muted">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' • ' + esc(h.dest || '') + '</div>' +
-        '<div class="muted">' + (h.bills || []).map(function (b) { return (b.docType === '1' ? 'बिल ' : 'चलान ') + esc(b.docNo) + ' – ' + esc(b.buyerName) + (b.supplierIsDefault === false ? ' <span class="chip warn">' + esc(b.supplierName) + '</span>' : ''); }).join('<br>') + '</div>' +
-        '</div><div style="text-align:right">' +
-        '<span class="chip ' + (h.status === 'ok' ? 'ok' : 'warn') + '">' + (h.status === 'ok' ? 'सकियो' : 'अधुरो') + '</span>' +
-        '<div class="muted" style="margin-top:6px">' + tq + ' • Rs ' + money(ta) + '</div></div></div>' +
-        (h.note ? '<div class="note warn">' + esc(h.note) + '</div>' : '') +
-        '<div class="actions">' +
-        (hasJpg ? '<button class="btn go" data-share="' + esc(h.jpg) + '" data-cid="' + esc(h.cid) + '">फोटो Share</button><button class="btn plain" data-open="' + esc(h.jpg) + '">फोटो</button>' : '') +
-        (hasPdf ? '<button class="btn plain" data-open="' + esc(h.pdf) + '">PDF</button>' : '') +
-        (h.cid ? '<button class="btn ghost" data-reprint="' + esc(h.cid) + '">' + (hasPdf && hasJpg ? 'फेरि निकाल्नुहोस्' : 'PDF / फोटो निकाल्नुहोस्') + '</button>' : '') +
-        '</div></div>';
-    }).join('');
+  var onDryDone = function () {
+    $('runTitle').textContent = 'Test सकियो — केही save भएको छैन';
+    $('runResult').innerHTML = '<div class="note ok">VCTS फारम भरियो (पहिलो बिल मात्र)। “VCTS page हेर्नुहोस्” थिचेर हेर्नुहोस्। त्यहाँ Save <b>नथिच्नुहोस्</b>।</div>' +
+      '<button class="btn primary" id="dryBack">ठिक छ, फर्कनुहोस्</button>';
+    $('dryBack').onclick = function () { go('review'); };
   };
 
-  /* ---------- CUSTOMERS ---------- */
-  var custCb = null, custEditing = null;
+  var onRealDone = function (e) {
+    var j = currentJob || { bills: [] };
+    var cid = e.consignmentId;
+    FILES[cid] = { pdf: e.pdf || '', jpg: e.jpg || '' };
+    if (e.row) mergeRows([e.row], false);
+    else mergeRows([{ id: cid, lock: '1', del: '1', status: 'Ongoing', date: (j.departDate || '') + ' ', from: j.deptLocation, to: j.destDistrict, vehicle: j.vehicle, initial: j.mid ? '0' : '1', parent: j.mid || '', vtype: '1' }], false);
+    if (e.docs && e.docs.length) setDocs(cid, e.docs);
+    else setDocs(cid, j.bills.map(function (b) { return { c: cid, st: 'On going', t: b.docType, n: b.docNo, d: b.docDate, q: b.qty, a: b.amount, sp: b.supplierPan, sn: b.supplierName, bp: b.buyerPan, bn: b.buyerName, ds: b.docType === '2' ? 'Mobile Sales-' + b.destPlace : b.destLocation, id: '' }; }));
+    j.bills.forEach(function (b) {
+      if (b.docType !== '1') return;
+      var c = custByPan(b.buyerPan);
+      if (!c) { c = { id: 'p' + b.buyerPan, pan: b.buyerPan, name: b.buyerName, district: b.district }; C.push(c); }
+      c.uses = (c.uses || 0) + 1; c.last = b.docDate;
+    });
+    save('customers', C);
+    saveAll();
+    resetForm();
+    $('runTitle').textContent = 'सकियो ✓';
+    $('runResult').innerHTML = '<div class="card"><div class="muted">Consignment ID</div><div class="big">' + esc(cid) + '</div>' +
+      '<div class="muted" style="margin-top:4px">Save ✓ • Lock Consignment ✓ • Start Vehicle ✓</div>' +
+      (e.pdf ? outputBlock(cid, e.pdf, e.jpg, e.gallery) : '<div class="note warn">' + esc(e.message || 'PDF बनेन — Consignment हरू बाट फेरि प्रयास गर्नुहोस्।') + '</div>') +
+      '</div><div class="note info">गाडी पुगेपछि यो consignment खोलेर <b>डेलिभरी सकाउनुहोस् (End Delivery)</b>।</div>' +
+      '<button class="btn primary" id="openAfter">यो consignment हेर्नुहोस्</button>' +
+      '<button class="btn plain" id="newAfter">नयाँ consignment</button>';
+    $('newAfter').onclick = function () { go('new'); };
+    $('openAfter').onclick = function () { openDetail(cid); };
+  };
+
+  var onReprintDone = function (e) {
+    if (e.pdf) FILES[e.consignmentId] = { pdf: e.pdf, jpg: e.jpg || '' };
+    saveAll();
+    $('runTitle').textContent = 'फोटो / PDF तयार भयो';
+    $('runResult').innerHTML = '<div class="card"><div class="muted">Consignment ID</div><div class="big">' + esc(e.consignmentId) + '</div>' +
+      (e.pdf ? outputBlock(e.consignmentId, e.pdf, e.jpg, e.gallery) : '<div class="note warn">' + esc(e.message || '') + '</div>') + '</div>' +
+      '<button class="btn plain" id="reBack">फर्कनुहोस्</button>';
+    $('reBack').onclick = function () { openDetail(e.consignmentId); };
+  };
+
+  var onDataDone = function (e) {
+    var data = e.data || {};
+    mergeRows(data.list, true);
+    var byC = {};
+    (data.docs || []).forEach(function (d) { (byC[d.c] = byC[d.c] || []).push(d); });
+    (data.read || []).forEach(function (cid) { setDocs(cid, byC[cid] || []); });
+    rebuildCustomers();
+    saveAll();
+    SYNC = Object.assign({}, SYNC || {}, { time: Date.now() });
+    if (e.mode === 'sync' && e.info) {
+      var inf = e.info;
+      SYNC.company = inf.company; SYNC.pan = inf.pan; SYNC.today = inf.today; SYNC.driver = inf.driver;
+    }
+    save('sync', SYNC);
+    var back = taskBack || 'list';
+    taskBack = null;
+    if (back === 'settings') { S.advanced = true; save('settings', S); go('settings'); showSync(); return; }
+    go(back);
+  };
+  var taskBack = null;
+
+  var onConsDone = function (e) {
+    if (e.row) mergeRows([e.row], false);
+    if (e.docs) setDocs(e.consignmentId, e.docs);
+    saveAll();
+    openDetail(e.consignmentId);
+    var msg = e.mode === 'end' ? 'End Delivery भयो ✓' : (e.what === 'lock' ? 'Lock Consignment भयो ✓' : 'Start Vehicle भयो ✓');
+    $('detailBody').insertAdjacentHTML('afterbegin', '<div class="note ok">' + esc(msg) + '</div>');
+  };
+
+  var onError = function (e) {
+    lastError = e;
+    if (e.mode === 'check') {
+      $('runTitle').textContent = 'जाँच गर्न सकिएन';
+    } else {
+      $('runTitle').textContent = e.stopped ? 'रोकियो' : 'समस्या आयो';
+    }
+    var msg = '<div class="note bad">' + esc(e.message) + '</div>';
+    var back = 'new';
+    if (e.mode === 'real' && e.consignmentId) {
+      msg += '<div class="note warn">Consignment <b>' + esc(e.consignmentId) + '</b> VCTS मा बनिसकेको छ। फेरि नबनाउनुहोस्। यो consignment खोलेर बाँकी काम (Lock / Start / Print) गर्नुहोस्।</div>';
+      mergeRows([{ id: e.consignmentId, lock: '2', del: '0', status: 'Not Dispatched', date: '', to: (currentJob || {}).destDistrict || '', initial: (currentJob || {}).mid ? '0' : '1', parent: (currentJob || {}).mid || '', vtype: '1' }], false);
+      saveAll();
+      resetForm();
+      back = 'detail:' + e.consignmentId;
+    } else if (e.mode === 'real' && e.unknown) {
+      msg += '<div class="note warn">VCTS ले जवाफ दिएन। फेरि पठाउनु अघि “Consignment हरू” मा ↻ थिचेर हेर्नुहोस्।</div>';
+      back = 'list';
+    } else if (e.mode === 'real' || e.mode === 'check' || e.mode === 'dry') {
+      msg += '<div class="muted">VCTS मा केही save भएको छैन। सच्याएर फेरि प्रयास गर्न सक्नुहुन्छ।</div>';
+      back = e.mode === 'check' ? 'new' : 'review';
+    } else if (e.mode === 'end' || e.mode === 'action' || e.mode === 'reprint') {
+      back = 'detail:' + e.consignmentId;
+    } else if (e.mode === 'sync') {
+      back = 'settings';
+    } else {
+      back = 'list';
+    }
+    $('runResult').innerHTML = msg +
+      '<button class="btn go" id="toSon">छोरालाई पठाउनुहोस् (WhatsApp)</button>' +
+      '<button class="btn plain" id="errBack">फर्कनुहोस्</button>';
+    $('toSon').onclick = sendSon;
+    $('errBack').onclick = function () {
+      if (back.indexOf('detail:') === 0) openDetail(back.slice(7)); else go(back);
+    };
+  };
+
+  /* =====================================================================
+     CONSIGNMENTS
+     ===================================================================== */
+  var listLimit = 30;
+  var renderList = function () {
+    $('listInfo').textContent = SYNC && SYNC.time ? 'पछिल्लो पटक ताजा: ' + new Date(SYNC.time).toLocaleString() : 'पहिलो पटक ↻ थिच्नुहोस्।';
+    if (!VC.length) {
+      var ids = Object.keys(FILES);
+      $('consList').innerHTML = ids.length ? ids.map(function (id) {
+        return '<div class="card" data-open-cons="' + esc(id) + '"><b>' + esc(id) + '</b></div>';
+      }).join('') : '<div class="empty">अहिलेसम्म केही छैन।</div>';
+      return;
+    }
+    var rows = VC.slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+    var html = rows.slice(0, listLimit).map(function (r) {
+      var ds = docsOf(r.id);
+      var tq = 0, ta = 0;
+      ds.forEach(function (d) { tq += Number(d.q) || 0; ta += Number(d.a) || 0; });
+      return '<div class="card" data-open-cons="' + esc(r.id) + '"><div class="list-item"><div>' +
+        '<div style="font-weight:700">' + esc(r.id) + '</div>' +
+        '<div class="muted">' + esc(r.date) + ' • ' + esc(r.to) + (r.initial === '0' ? ' • Mid-Consignment' : '') + '</div>' +
+        '<div class="muted">' + ds.slice(0, 4).map(function (d) { return esc(docLabel(d) + ' – ' + d.bn); }).join('<br>') + (ds.length > 4 ? '<br>…' : '') + '</div>' +
+        '</div><div style="text-align:right">' + statusChip(r) +
+        (ds.length ? '<div class="muted" style="margin-top:6px">' + tq + ' • रु ' + money(ta) + '</div>' : '') + '</div></div></div>';
+    }).join('');
+    if (rows.length > listLimit) html += '<button class="btn plain" id="moreList">अझ देखाउनुहोस्</button>';
+    $('consList').innerHTML = html;
+    if ($('moreList')) $('moreList').onclick = function () { listLimit += 30; renderList(); };
+  };
+  var knownFinal = function () {
+    return VREAD.filter(function (id) { var r = vcById(id); return r && r.del === '2'; });
+  };
+  var startRefresh = function (back) {
+    if (!S.username || !App.hasPassword()) { go('settings'); return; }
+    taskBack = back;
+    startTask('VCTS बाट ताजा गर्दै…', function () { App.refresh(JSON.stringify({ known: knownFinal() })); });
+  };
+  $('refreshList').addEventListener('click', function () { startRefresh('list'); });
+
+  var detailId = '';
+  var openDetail = function (id) {
+    detailId = id;
+    renderDetail();
+    go('detail');
+  };
+  var renderDetail = function () {
+    var id = detailId, r = vcById(id) || { id: id };
+    var ds = docsOf(id);
+    var files = FILES[id] || {};
+    var hasJpg = files.jpg && App.fileExists(files.jpg), hasPdf = files.pdf && App.fileExists(files.pdf);
+    var h = '<div class="card"><div class="list-item"><div><div class="muted">Consignment ID</div><div class="big">' + esc(id) + '</div></div>' + statusChip(r) + '</div>' +
+      '<dl class="kv" style="margin-top:10px">' +
+      '<dt>मिति</dt><dd>' + esc(r.date || '') + '</dd>' +
+      '<dt>कहाँबाट</dt><dd>' + esc(r.from || '') + '</dd>' +
+      '<dt>कहाँसम्म</dt><dd>' + esc(r.to || '') + '</dd>' +
+      (r.vehicle ? '<dt>गाडी</dt><dd>' + esc(r.vehicle) + '</dd>' : '') +
+      (r.driver ? '<dt>चालक</dt><dd>' + esc(r.driver) + '</dd>' : '') +
+      (r.initial === '0' && r.parent ? '<dt>Mid-Consignment</dt><dd>' + esc(r.parent) + '</dd>' : '') +
+      '</dl></div>';
+
+    var open = ongoing(r);
+    h += '<div class="card"><h3>बिलहरू</h3>';
+    if (!ds.length) h += '<div class="muted">बिल देखाउन “Consignment हरू” मा ↻ थिच्नुहोस्।</div>';
+    ds.forEach(function (d) {
+      var delivered = /delivered/i.test(d.st);
+      var canTick = open && !delivered && d.id;
+      h += '<div class="docrow">' + (canTick ? '<input type="checkbox" data-doc="' + esc(d.id) + '">' : '<span style="width:26px;flex:none;text-align:center">' + (delivered ? '✅' : '•') + '</span>') +
+        '<div class="grow"><b>' + esc(docLabel(d)) + '</b> — ' + esc(d.bn) + '<div class="muted">' + esc(d.q) + ' ' + esc(S.unitType) + ' • रु ' + money(d.a) + ' • ' + esc(d.ds) + '</div>' +
+        '<div class="muted">' + esc(d.sn) + ' • ' + esc(d.st) + '</div></div></div>';
+    });
+    h += '</div>';
+
+    if (r.lock === '2') {
+      h += '<div class="note warn">यो consignment अझै Lock भएको छैन।<button class="btn warnb" data-act-cons="lock">Lock Consignment</button></div>';
+    } else if (r.lock === '1' && r.del === '0') {
+      h += '<div class="note warn">Lock भयो, तर गाडी Start भएको छैन।<button class="btn warnb" data-act-cons="start">Start Vehicle</button></div>';
+    }
+    if (open) {
+      h += '<div class="card"><h3>डेलिभरी सकाउनुहोस् (End Delivery)</h3>' +
+        '<div class="muted">पुगेको बिलमा ✓ लगाएर “छानेका बिल” थिच्नुहोस्, वा सबै एकैचोटि।</div>' +
+        '<button class="btn primary" id="endSome" disabled>छानेका बिल डेलिभर भए</button>' +
+        '<button class="btn go" id="endAll">सबै बिल डेलिभर भए</button></div>';
+      if (r.lock === '1' && r.vtype === '1') {
+        h += '<button class="btn ghost" id="addMid">+ Add Mid-Consignment (यही गाडीमा थप बिल)</button>';
+      }
+    }
+    if (r.del === '1' || r.del === '2' || r.del === '3') {
+      h += '<div class="card"><h3>Print Consignment</h3>' +
+        ((hasJpg || hasPdf) ? outputBlock(id, hasPdf ? files.pdf : '', hasJpg ? files.jpg : '', false) : '') +
+        '<button class="btn plain" id="reprint">' + ((hasJpg || hasPdf) ? 'फेरि निकाल्नुहोस्' : 'फोटो / PDF निकाल्नुहोस्') + '</button></div>';
+    }
+    var mids = VC.filter(function (x) { return x.parent === id && x.initial === '0'; });
+    if (mids.length) {
+      h += '<div class="card"><h3>Mid-Consignment हरू</h3>' + mids.map(function (m) {
+        return '<div class="docrow" data-open-cons="' + esc(m.id) + '"><div class="grow"><b>' + esc(m.id) + '</b><div class="muted">' + esc(m.date) + ' • ' + esc(m.to) + '</div></div>' + statusChip(m) + '</div>';
+      }).join('') + '</div>';
+    }
+    $('detailBody').innerHTML = h;
+
+    each('#detailBody input[data-doc]', function (cb) {
+      cb.addEventListener('change', function () {
+        $('endSome').disabled = !document.querySelector('#detailBody input[data-doc]:checked');
+      });
+    });
+    if ($('endSome')) $('endSome').onclick = function () {
+      var ids = Array.prototype.map.call(document.querySelectorAll('#detailBody input[data-doc]:checked'), function (c) { return c.getAttribute('data-doc'); });
+      var names = ds.filter(function (d) { return ids.indexOf(d.id) >= 0; }).map(function (d) { return docLabel(d) + ' – ' + d.bn; });
+      ask('यी बिल डेलिभर भए?', '<p>' + names.map(esc).join('<br>') + '</p><p>VCTS मा End Delivery हुन्छ।</p>', 'हो, End Delivery', 'होइन').then(function (y) {
+        if (y) startTask('End Delivery गर्दै…', function () { App.endDelivery(JSON.stringify({ cid: id, which: ids })); });
+      });
+    };
+    if ($('endAll')) $('endAll').onclick = function () {
+      ask('सबै बिल डेलिभर भए?', '<p>Consignment ' + esc(id) + ' का सबै बाँकी बिल VCTS मा End Delivery हुन्छन्।</p>', 'हो, सबै End Delivery', 'होइन').then(function (y) {
+        if (y) startTask('End Delivery गर्दै…', function () { App.endDelivery(JSON.stringify({ cid: id, which: 'all' })); });
+      });
+    };
+    each('#detailBody [data-act-cons]', function (b) {
+      b.onclick = function () {
+        var what = b.getAttribute('data-act-cons');
+        var label = what === 'lock' ? 'Lock Consignment' : 'Start Vehicle';
+        ask(label + ' गर्ने?', '<p>Consignment ' + esc(id) + '</p>', 'हो, ' + label, 'होइन').then(function (y) {
+          if (y) startTask(label + '…', function () { App.action(JSON.stringify({ cid: id, what: what })); });
+        });
+      };
+    });
+    if ($('addMid')) $('addMid').onclick = function () { resetForm(id); go('new'); };
+    if ($('reprint')) $('reprint').onclick = function () {
+      startTask('फोटो / PDF निकाल्दै…', function () { App.reprint(id); });
+    };
+  };
+  $('detailBack').addEventListener('click', function () { go('list'); });
+
+  /* =====================================================================
+     CUSTOMERS
+     ===================================================================== */
+  var custCb = null, custEditing = null, custDist = 'MORANG';
+  var renderCustDist = function () {
+    $('c_dist').innerHTML = DISTRICTS.map(function (d) { return '<button data-cd="' + d + '" class="' + (d === custDist ? 'on' : '') + '">' + d + '</button>'; }).join('');
+  };
+  $('c_dist').addEventListener('click', function (e) { var b = e.target.closest('[data-cd]'); if (b) { custDist = b.getAttribute('data-cd'); renderCustDist(); } });
   var openCustomer = function (c, cb) {
     custEditing = c; custCb = cb || null;
     $('custTitle').textContent = c ? 'ग्राहक सच्याउनुहोस्' : 'नयाँ ग्राहक';
     $('c_name').value = c ? c.name : '';
     $('c_pan').value = c ? c.pan : '';
-    districtOptions($('c_district'), c ? c.district : (S.deptDistrict || 'MORANG'));
-    $('c_location').value = c ? (c.location || '') : '';
+    custDist = c && c.district ? c.district : 'MORANG';
+    renderCustDist();
     $('custModal').classList.add('on');
-    setTimeout(function () { $('c_name').focus(); }, 50);
   };
   $('custCancel').addEventListener('click', function () { $('custModal').classList.remove('on'); });
   $('custSave').addEventListener('click', function () {
     var name = $('c_name').value.trim(), pan = $('c_pan').value.trim();
     if (!name) { $('c_name').classList.add('err'); return; }
-    if (!/^[0-9]{9}$/.test(pan)) { $('c_pan').classList.add('err'); alert('PAN ९ अंकको हुनुपर्छ'); return; }
-    var c = custEditing || { id: uid() };
-    c.name = name; c.pan = pan; c.district = $('c_district').value; c.location = $('c_location').value.trim();
+    if (!/^[0-9]{9}$/.test(pan)) { $('c_pan').classList.add('err'); return; }
+    var other = custByPan(pan);
+    if (other && other !== custEditing) { $('c_pan').classList.add('err'); return; }
+    var c = custEditing || { id: 'p' + pan };
+    c.name = name; c.pan = pan; c.district = custDist; c.edited = true;
     if (!custEditing) C.push(c);
     save('customers', C);
     $('custModal').classList.remove('on');
@@ -660,12 +1198,17 @@
     renderCustomers();
   });
   $('addCust').addEventListener('click', function () { openCustomer(null); });
+  $('importCust').addEventListener('click', function () { startRefresh('customers'); });
+  $('custSearch').addEventListener('input', function () { renderCustomers(); });
   var renderCustomers = function () {
-    if (!C.length) { $('custList').innerHTML = '<div class="empty">ग्राहक छैनन्।</div>'; return; }
-    $('custList').innerHTML = C.map(function (c) {
+    var q = $('custSearch').value;
+    var list = findCustomers(q, 60);
+    $('custInfo').textContent = 'जम्मा ' + C.length + ' ग्राहक' + (q ? ' • ' + list.length + ' भेटिए' : '');
+    if (!list.length) { $('custList').innerHTML = '<div class="empty">ग्राहक भेटिएन।</div>'; return; }
+    $('custList').innerHTML = list.map(function (c) {
       return '<div class="card"><div class="list-item"><div><div style="font-weight:700">' + esc(c.name) + '</div>' +
-        '<div class="muted">PAN ' + esc(c.pan) + ' • ' + esc(c.district) + (c.location ? ' • ' + esc(c.location) : '') + '</div></div>' +
-        '<div><button class="link" data-edit="' + esc(c.id) + '">सच्याउने</button><br><button class="link bad" data-del="' + esc(c.id) + '">हटाउने</button></div></div></div>';
+        '<div class="muted">PAN ' + esc(c.pan) + ' • ' + esc(c.district || '') + (c.uses ? ' • ' + c.uses + ' पटक' : '') + (c.last ? ' • ' + esc(c.last) : '') + '</div></div>' +
+        '<div style="text-align:right"><button class="link" data-edit="' + esc(c.id) + '">सच्याउने</button><br><button class="link bad" data-del="' + esc(c.id) + '">हटाउने</button></div></div></div>';
     }).join('');
   };
   $('custList').addEventListener('click', function (e) {
@@ -673,18 +1216,37 @@
     if (ed) openCustomer(custById(ed.getAttribute('data-edit')));
     if (del) {
       var c = custById(del.getAttribute('data-del'));
-      if (c && confirm(c.name + ' हटाउने हो?')) { C = C.filter(function (x) { return x !== c; }); save('customers', C); renderCustomers(); }
+      if (c) ask(c.name + ' हटाउने?', '', 'हो, हटाउनुहोस्', 'होइन', 'warnb').then(function (y) {
+        if (y) { C = C.filter(function (x) { return x !== c; }); save('customers', C); renderCustomers(); }
+      });
     }
   });
 
-  /* ---------- SETTINGS ---------- */
-  var FIELDS = ['username', 'vehicle', 'driverMobile', 'deptDistrict', 'deptLocation', 'goods', 'unitType', 'challanDest'];
+  /* =====================================================================
+     SETTINGS (advanced part is hidden: tap the version line 5 times)
+     ===================================================================== */
+  var FONTS = [[1, 'सानो'], [1.15, 'मध्यम'], [1.3, 'ठूलो'], [1.5, 'धेरै ठूलो']];
+  var FIELDS = ['username', 'vehicle', 'driverMobile', 'deptDistrict', 'deptLocation', 'goods', 'unitType', 'sonNumber'];
+  var renderFonts = function () {
+    $('fontBtns').innerHTML = FONTS.map(function (f) {
+      return '<button data-font="' + f[0] + '" class="' + (Number(S.fontScale) === f[0] ? 'on' : '') + '">' + f[1] + '</button>';
+    }).join('');
+  };
+  $('fontBtns').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-font]');
+    if (!b) return;
+    S.fontScale = Number(b.getAttribute('data-font'));
+    save('settings', S);
+    applyFont();
+    renderFonts();
+  });
   var renderSuppliers = function () {
     $('supList').innerHTML = S.suppliers.map(function (s, k) {
-      return '<div class="row" data-sup="' + k + '" style="align-items:flex-end">' +
-        '<div style="flex:1.4"><label>नाम' + (k === 0 ? ' (default)' : '') + '</label><input data-sf="name" value="' + esc(s.name) + '"></div>' +
-        '<div><label>PAN</label><input data-sf="pan" inputmode="numeric" maxlength="9" value="' + esc(s.pan) + '"></div>' +
-        (S.suppliers.length > 1 ? '<div style="flex:none"><button class="link bad" data-sdel="' + k + '" style="padding:12px 0">✕</button></div>' : '') +
+      return '<div data-sup="' + k + '" style="border-top:1px solid #eef1f5;margin-top:10px;padding-top:4px">' +
+        '<label>' + (k + 1) + '. नाम' + (k === 0 ? ' (default)' : '') +
+        (S.suppliers.length > 1 ? ' <button class="link bad" data-sdel="' + k + '" style="float:right;padding:0">हटाउने</button>' : '') + '</label>' +
+        '<input data-sf="name" value="' + esc(s.name) + '">' +
+        '<label>PAN</label><input data-sf="pan" inputmode="numeric" maxlength="9" value="' + esc(s.pan) + '">' +
         '</div>';
     }).join('');
   };
@@ -701,58 +1263,66 @@
     S.suppliers.splice(Number(d.getAttribute('data-sdel')), 1);
     renderSuppliers();
   });
+  var setupMode = function () { return !S.username || !App.hasPassword(); };
   var renderSettings = function () {
+    renderFonts();
+    var adv = S.advanced || setupMode();
+    $('advBox').style.display = adv ? '' : 'none';
+    $('advOff').style.display = S.advanced && !setupMode() ? '' : 'none';
+    $('setupNote').innerHTML = setupMode() ? '<div class="note warn">पहिलो पटक: VCTS user name र password राखेर “लगइन जाँच र VCTS sync” थिच्नुहोस्। त्यसपछि यो भाग लुक्छ (फेरि खोल्न तलको version ५ पटक थिच्नुहोस्)।</div>' : '';
     FIELDS.forEach(function (f) { $('s_' + f).value = S[f] || ''; });
     renderSuppliers();
     $('s_password').value = '';
     var has = App.hasPassword();
     $('s_password').placeholder = has ? '•••••••• (सेभ भइसकेको)' : 'VCTS password';
     $('pwState').textContent = has ? 'Password यो फोनमा मात्र, encrypt गरेर राखिएको छ।' : '';
-    if (SYNC && !$('syncResult').innerHTML) showSync(SYNC);
+    $('verLine').textContent = 'VCTS Helper ' + (App.version() || '');
+    if (SYNC && adv && !$('syncResult').innerHTML) showSync();
   };
+  var verTaps = 0, verTimer = null;
+  $('verLine').addEventListener('click', function () {
+    verTaps++;
+    clearTimeout(verTimer);
+    verTimer = setTimeout(function () { verTaps = 0; }, 1500);
+    if (verTaps >= 5) { verTaps = 0; S.advanced = true; save('settings', S); renderSettings(); showAdv(); }
+  });
+  $('advOff').addEventListener('click', function () { S.advanced = false; save('settings', S); renderSettings(); showAdv(); });
   var saveSettings = function () {
     FIELDS.forEach(function (f) { S[f] = $('s_' + f).value.trim(); });
     var sups = readSuppliers();
     if (sups.length) S.suppliers = sups;
-    S.ownName = S.suppliers[0].name; S.ownPan = S.suppliers[0].pan;
     S.vehicle = S.vehicle.toUpperCase().replace(/\s+/g, '');
     S.deptDistrict = S.deptDistrict.toUpperCase();
     save('settings', S);
     var pw = $('s_password').value;
     if (pw) { App.setPassword(pw); $('s_password').value = ''; }
-    renderSettings();
   };
   $('saveSettings').addEventListener('click', function () {
     saveSettings();
-    var badSup = S.suppliers.filter(function (s) { return !s.name || !/^[0-9]{9}$/.test(s.pan); });
-    $('syncResult').innerHTML = badSup.length
-      ? '<div class="note bad">बिक्रेताको PAN ९ अंकको हुनुपर्छ: ' + esc(badSup.map(function (s) { return s.name || s.pan; }).join(', ')) + '</div>'
+    var bad = S.suppliers.filter(function (s) { return !s.name || !/^[0-9]{9}$/.test(s.pan); });
+    $('syncResult').innerHTML = bad.length
+      ? '<div class="note bad">बिक्रेताको PAN ९ अंकको हुनुपर्छ: ' + esc(bad.map(function (s) { return s.name || s.pan; }).join(', ')) + '</div>'
       : '<div class="note ok">सेभ भयो ✓</div>';
+    renderSettings();
   });
   $('syncBtn').addEventListener('click', function () {
     saveSettings();
     if (!S.username || !App.hasPassword()) { $('syncResult').innerHTML = '<div class="note bad">User name र password राख्नुहोस्।</div>'; return; }
-    running = true; steps = {}; $('steps').innerHTML = ''; $('runResult').innerHTML = '';
-    $('runTitle').textContent = 'VCTS लगइन जाँच्दै…';
-    $('stopRun').style.display = ''; $('showSite').style.display = '';
-    go('run');
-    App.sync(JSON.stringify({ driverMobile: S.driverMobile }));
+    taskBack = 'settings';
+    startTask('VCTS लगइन जाँच र sync…', function () { App.sync(JSON.stringify({ driverMobile: S.driverMobile, known: knownFinal() })); });
   });
-  var showSync = function (info) {
-    var drv = info.driver || {};
+  var showSync = function () {
+    if (!SYNC) return;
+    var drv = SYNC.driver || {};
     $('syncResult').innerHTML = '<div class="note ' + (drv.ok === false ? 'warn' : 'ok') + '">' +
-      '✓ लगइन भयो: <b>' + esc(info.company || '') + '</b> (PAN ' + esc(info.pan || '') + ')<br>' +
-      'VCTS को आजको मिति: ' + esc(info.today || '?') + '<br>' +
-      (drv.ok ? 'चालक भेटियो: ' + esc(drv.name || '') : 'चालक भेटिएन: ' + esc(drv.msg || S.driverMobile)) + '<br>' +
-      'जिल्ला सूची: ' + ((info.districts || []).length || D.length) + '</div>';
-  };
-  var onSyncDone = function (info) {
-    if (info.districts && info.districts.length) { D = info.districts; save('districts', D); }
-    SYNC = { company: info.company, pan: info.pan, today: info.today, docFrom: info.docFrom, docTo: info.docTo, driver: info.driver, districts: info.districts, time: Date.now() };
-    save('sync', SYNC);
-    showSync(SYNC);
+      (SYNC.company ? '✓ लगइन भयो: <b>' + esc(SYNC.company) + '</b> (PAN ' + esc(SYNC.pan || '') + ')<br>' : '') +
+      (SYNC.today ? 'VCTS को आजको मिति: ' + esc(SYNC.today) + '<br>' : '') +
+      (drv.ok ? 'चालक भेटियो: ' + esc(drv.name || '') + '<br>' : (drv.msg ? 'चालक भेटिएन: ' + esc(drv.msg) + '<br>' : '')) +
+      VC.length + ' consignment • ' + VD.length + ' बिल • ' + C.length + ' ग्राहक' +
+      (SYNC.time ? '<br>' + esc(new Date(SYNC.time).toLocaleString()) : '') + '</div>';
   };
 
+  showAdv();
   renderNew();
 })();
 </script>
