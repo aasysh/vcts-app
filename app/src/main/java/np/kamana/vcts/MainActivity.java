@@ -210,6 +210,29 @@ public class MainActivity extends Activity {
         startActivity(Intent.createChooser(i, "Share"));
     }
 
+    void sendWhatsApp(String number, String text) {
+        String digits = number == null ? "" : number.replaceAll("[^0-9]", "");
+        if (digits.length() == 10 && digits.startsWith("9")) digits = "977" + digits;
+        try {
+            if (!digits.isEmpty()) {
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/" + digits + "?text=" + Uri.encode(text)));
+                startActivity(i);
+                return;
+            }
+        } catch (Exception ignored) {
+        }
+        Intent s = new Intent(Intent.ACTION_SEND);
+        s.setType("text/plain");
+        s.putExtra(Intent.EXTRA_TEXT, text);
+        try {
+            s.setPackage("com.whatsapp");
+            startActivity(s);
+        } catch (Exception e) {
+            s.setPackage(null);
+            startActivity(Intent.createChooser(s, "पठाउनुहोस्"));
+        }
+    }
+
     /** Fallback when the PDF cannot be saved directly: the phone's own print screen ("Save as PDF"). */
     void systemPrint(String name) {
         PrintManager pm = (PrintManager) getSystemService(PRINT_SERVICE);
@@ -292,6 +315,21 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public void shareFile(String path, String text) {
             runOnUiThread(() -> MainActivity.this.shareFile(path, text));
+        }
+
+        /** Opens WhatsApp with a ready message to the given number (or lets the user pick a chat). */
+        @JavascriptInterface
+        public void sendWhatsApp(String number, String text) {
+            runOnUiThread(() -> MainActivity.this.sendWhatsApp(number, text));
+        }
+
+        @JavascriptInterface
+        public String version() {
+            try {
+                return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            } catch (Exception e) {
+                return "";
+            }
         }
 
         @JavascriptInterface
