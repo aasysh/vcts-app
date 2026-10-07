@@ -14,7 +14,7 @@ finds the website hard to use. It follows the website's own steps:
 - **Customers** are imported from past consignments in VCTS and can be searched by PAN or name.
 - **Photo (JPEG) and PDF** of each consignment, saved to the Gallery (VCTS album) and shareable on WhatsApp.
 - **Font size** in Settings. **“Send to son”** button on every error (WhatsApp).
-- Login, vehicle, driver, suppliers and Test mode are hidden: Settings → tap the version line 5 times.
+- Settings: font size, then “लगइन विवरण” (VCTS login, vehicle, driver, suppliers, son's WhatsApp, Test buttons on/off).
 - The VCTS password is stored only on the phone, encrypted with the Android key store.
 
 ## Building

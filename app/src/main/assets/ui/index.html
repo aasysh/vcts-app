@@ -105,7 +105,6 @@
   .fontbtns button { border: 1px solid #c9d0db; background: #fff; border-radius: 10px; padding: 12px; font: inherit; color: var(--ink); }
   .fontbtns button.on { background: var(--brand); color: #fff; font-weight: 700; border-color: var(--brand); }
   .ver { text-align: center; color: var(--muted); font-size: 13px; padding: 18px 0 6px; user-select: none; }
-  .adv { border-color: #f1d9a6; }
 </style>
 </head>
 <body>
@@ -180,8 +179,9 @@
       <div class="muted" style="margin-top:10px">यो अक्षर यस्तो देखिन्छ: बिल २१६ — रु १,६८,९९२</div>
     </div>
     <div id="setupNote"></div>
+    <h2 style="margin-top:20px">लगइन विवरण</h2>
     <div id="advBox">
-      <div class="card adv">
+      <div class="card">
         <h3>VCTS लगइन</h3>
         <label for="s_username">User Name</label>
         <input id="s_username" autocomplete="username" autocapitalize="off">
@@ -189,7 +189,7 @@
         <input id="s_password" type="password" autocomplete="current-password" placeholder="">
         <div class="muted" id="pwState"></div>
       </div>
-      <div class="card adv">
+      <div class="card">
         <h3>सधैं उही रहने विवरण</h3>
         <label for="s_vehicle">गाडी नम्बर (VCTS जस्तै: KO1CHA7335)</label>
         <input id="s_vehicle" autocapitalize="characters">
@@ -204,21 +204,27 @@
           <div><label for="s_unitType">इकाई</label><input id="s_unitType"></div>
         </div>
       </div>
-      <div class="card adv">
+      <div class="card">
         <h3>बिक्रेता (Supplier)</h3>
         <div class="muted">पहिलो नाम नयाँ बिलमा आफैं छानिन्छ।</div>
         <div id="supList"></div>
         <button class="link" id="addSup">+ अर्को बिक्रेता</button>
       </div>
-      <div class="card adv">
+      <div class="card">
         <h3>छोराको WhatsApp</h3>
         <label for="s_sonNumber">समस्या आउँदा “छोरालाई पठाउनुहोस्” यो नम्बरमा जान्छ</label>
         <input id="s_sonNumber" inputmode="tel" placeholder="98XXXXXXXX">
       </div>
+      <div class="card">
+        <h3>जाँचका बटनहरू</h3>
+        <label style="display:flex;gap:10px;align-items:center;color:var(--ink);font-size:15px;margin:0">
+          <input type="checkbox" id="s_testTools" style="width:24px;height:24px;flex:none">
+          <span>“Test मात्र”, “VCTS page हेर्नुहोस्” र “रोक्नुहोस्” बटन देखाउने</span>
+        </label>
+      </div>
       <button class="btn primary" id="saveSettings">सेभ गर्नुहोस्</button>
       <button class="btn ghost" id="syncBtn">लगइन जाँच र VCTS sync</button>
       <div id="syncResult"></div>
-      <button class="btn plain" id="advOff">Advanced लुकाउनुहोस्</button>
     </div>
     <div class="ver" id="verLine">VCTS Helper</div>
   </section>
@@ -311,7 +317,7 @@
   var DEFAULT_SETTINGS = {
     username: '', vehicle: 'KO1CHA7335', driverMobile: '9844010608',
     deptDistrict: 'MORANG', deptLocation: 'Biratnagar-09',
-    goods: 'Alcohol', unitType: 'कार्टुन', sonNumber: '', fontScale: 1.15, advanced: false,
+    goods: 'Alcohol', unitType: 'कार्टुन', sonNumber: '', fontScale: 1.15, testTools: false,
     suppliers: [{ name: 'KAMANA TRADERS', pan: '300039166' }, { name: 'DANGAL BROTHERS', pan: '107353065' }]
   };
   var DEFAULT_CUSTOMERS = [
@@ -328,6 +334,8 @@
   S.suppliers.forEach(function (s) { if (s.pan === '107353065' && s.name === 'DANGAL TRADERS') s.name = 'DANGAL BROTHERS'; });
   S.dangalAdded = true;
   delete S.challanDest;
+  if (S.advanced) { S.testTools = true; }
+  delete S.advanced;
   var sup = function (i) { return S.suppliers[i] || S.suppliers[0]; };
 
   var C = load('customers', null) || DEFAULT_CUSTOMERS.slice();
@@ -392,7 +400,7 @@
     if (current !== 'new') { go('new'); return true; }
     return false;
   };
-  var showAdv = function () { each('.adv-only', function (e) { e.style.display = S.advanced ? '' : 'none'; }); };
+  var showAdv = function () { each('.adv-only', function (e) { e.style.display = S.testTools ? '' : 'none'; }); };
 
   /* ---------- customers ---------- */
   var custById = function (id) { return C.find(function (c) { return c.id === id; }); };
@@ -982,7 +990,7 @@
     save('sync', SYNC);
     var back = taskBack || 'list';
     taskBack = null;
-    if (back === 'settings') { S.advanced = true; save('settings', S); go('settings'); showSync(); return; }
+    if (back === 'settings') { go('settings'); showSync(); return; }
     go(back);
   };
   var taskBack = null;
@@ -1223,7 +1231,7 @@
   });
 
   /* =====================================================================
-     SETTINGS (advanced part is hidden: tap the version line 5 times)
+     SETTINGS
      ===================================================================== */
   var FONTS = [[1, 'सानो'], [1.15, 'मध्यम'], [1.3, 'ठूलो'], [1.5, 'धेरै ठूलो']];
   var FIELDS = ['username', 'vehicle', 'driverMobile', 'deptDistrict', 'deptLocation', 'goods', 'unitType', 'sonNumber'];
@@ -1266,10 +1274,8 @@
   var setupMode = function () { return !S.username || !App.hasPassword(); };
   var renderSettings = function () {
     renderFonts();
-    var adv = S.advanced || setupMode();
-    $('advBox').style.display = adv ? '' : 'none';
-    $('advOff').style.display = S.advanced && !setupMode() ? '' : 'none';
-    $('setupNote').innerHTML = setupMode() ? '<div class="note warn">पहिलो पटक: VCTS user name र password राखेर “लगइन जाँच र VCTS sync” थिच्नुहोस्। त्यसपछि यो भाग लुक्छ (फेरि खोल्न तलको version ५ पटक थिच्नुहोस्)।</div>' : '';
+    $('setupNote').innerHTML = setupMode() ? '<div class="note warn">पहिलो पटक: तलको लगइन विवरणमा VCTS user name र password राखेर “लगइन जाँच र VCTS sync” थिच्नुहोस्।</div>' : '';
+    $('s_testTools').checked = !!S.testTools;
     FIELDS.forEach(function (f) { $('s_' + f).value = S[f] || ''; });
     renderSuppliers();
     $('s_password').value = '';
@@ -1277,23 +1283,18 @@
     $('s_password').placeholder = has ? '•••••••• (सेभ भइसकेको)' : 'VCTS password';
     $('pwState').textContent = has ? 'Password यो फोनमा मात्र, encrypt गरेर राखिएको छ।' : '';
     $('verLine').textContent = 'VCTS Helper ' + (App.version() || '');
-    if (SYNC && adv && !$('syncResult').innerHTML) showSync();
+    if (SYNC && !$('syncResult').innerHTML) showSync();
   };
-  var verTaps = 0, verTimer = null;
-  $('verLine').addEventListener('click', function () {
-    verTaps++;
-    clearTimeout(verTimer);
-    verTimer = setTimeout(function () { verTaps = 0; }, 1500);
-    if (verTaps >= 5) { verTaps = 0; S.advanced = true; save('settings', S); renderSettings(); showAdv(); }
-  });
-  $('advOff').addEventListener('click', function () { S.advanced = false; save('settings', S); renderSettings(); showAdv(); });
+  $('s_testTools').addEventListener('change', function () { S.testTools = $('s_testTools').checked; save('settings', S); showAdv(); });
   var saveSettings = function () {
     FIELDS.forEach(function (f) { S[f] = $('s_' + f).value.trim(); });
     var sups = readSuppliers();
     if (sups.length) S.suppliers = sups;
     S.vehicle = S.vehicle.toUpperCase().replace(/\s+/g, '');
     S.deptDistrict = S.deptDistrict.toUpperCase();
+    S.testTools = $('s_testTools').checked;
     save('settings', S);
+    showAdv();
     var pw = $('s_password').value;
     if (pw) { App.setPassword(pw); $('s_password').value = ''; }
   };
