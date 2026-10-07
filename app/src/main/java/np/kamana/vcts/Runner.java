@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -689,10 +690,10 @@ final class Runner {
 
     private File printToPdf(String cid) throws Exception {
         loadAuthed(BASE + "/consignment/consignment_print/" + cid);
-        JSONObject p = jsObj("__vh.preparePrint()", 10000);
+        // One A4 landscape page, consignment zoomed as large as it fits (see bot.js preparePrint).
+        JSONObject p = jsObj("__vh.preparePrint()", 40000);
         if (!p.optBoolean("ok")) throw new Exception("Print page मा consignment देखिएन।");
-        jsVal("__vh.waitImages()", 20000);
-        Thread.sleep(1500);
+        Thread.sleep(1200);
 
         File dir = new File(act.getFilesDir(), "pdf");
         if (!dir.exists() && !dir.mkdirs()) throw new Exception("PDF folder बन्न सकेन।");
@@ -704,7 +705,7 @@ final class Runner {
             try {
                 PrintDocumentAdapter adapter = site.createPrintDocumentAdapter(name);
                 PrintAttributes attrs = new PrintAttributes.Builder()
-                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4.asLandscape())
                         .setResolution(new PrintAttributes.Resolution("pdf", "pdf", 600, 600))
                         .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
                         .build();
@@ -753,50 +754,58 @@ final class Runner {
         }
     }
 
-    /** Renders the saved PDF into one JPEG (pages stacked, empty bottom trimmed). */
+    /**
+     * Renders the saved PDF into one JPEG. Normally the PDF is a single landscape page; the photo is
+     * cut to the document itself (white margins removed) so it is as large as possible.
+     * If VCTS ever gives more than one page, the pages are stacked into the one photo.
+     */
     private File pdfToJpeg(File pdf, String cid) {
-        final int width = 1400;
+        final int pageWidth = 2600;
         final int gap = 24;
+        final int pad = 24;
         List<Bitmap> pages = new ArrayList<>();
         try (ParcelFileDescriptor fd = ParcelFileDescriptor.open(pdf, ParcelFileDescriptor.MODE_READ_ONLY);
              PdfRenderer renderer = new PdfRenderer(fd)) {
-            int n = Math.min(renderer.getPageCount(), 6);
+            int n = Math.min(renderer.getPageCount(), 4);
             for (int i = 0; i < n; i++) {
                 try (PdfRenderer.Page page = renderer.openPage(i)) {
-                    int h = Math.round(page.getHeight() * (width / (float) page.getWidth()));
-                    Bitmap bm = Bitmap.createBitmap(width, h, Bitmap.Config.ARGB_8888);
+                    int h = Math.round(page.getHeight() * (pageWidth / (float) page.getWidth()));
+                    Bitmap bm = Bitmap.createBitmap(pageWidth, h, Bitmap.Config.ARGB_8888);
                     bm.eraseColor(Color.WHITE);
                     page.render(bm, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-                    int used = contentBottom(bm);
-                    if (used <= 0) {
+                    Rect r = contentBounds(bm);
+                    if (r == null) {
                         bm.recycle();
                         continue;
                     }
-                    if (used < h) {
-                        Bitmap cut = Bitmap.createBitmap(bm, 0, 0, width, used);
-                        bm.recycle();
-                        bm = cut;
-                    }
-                    pages.add(bm);
+                    r.set(Math.max(0, r.left - pad), Math.max(0, r.top - pad), Math.min(bm.getWidth(), r.right + pad), Math.min(bm.getHeight(), r.bottom + pad));
+                    Bitmap cut = Bitmap.createBitmap(bm, r.left, r.top, r.width(), r.height());
+                    if (cut != bm) bm.recycle();
+                    pages.add(cut);
                 }
             }
             if (pages.isEmpty()) return null;
-            int total = 0;
-            for (Bitmap b : pages) total += b.getHeight();
-            total += gap * (pages.size() - 1);
-            Bitmap out = Bitmap.createBitmap(width, total, Bitmap.Config.ARGB_8888);
-            Canvas c = new Canvas(out);
-            c.drawColor(Color.WHITE);
-            Paint line = new Paint();
-            line.setColor(0xFFCCCCCC);
-            int y = 0;
-            for (int i = 0; i < pages.size(); i++) {
-                Bitmap b = pages.get(i);
-                c.drawBitmap(b, 0, y, null);
-                y += b.getHeight();
-                if (i < pages.size() - 1) {
-                    c.drawRect(0, y + gap / 2f - 1, width, y + gap / 2f + 1, line);
-                    y += gap;
+            Bitmap out;
+            if (pages.size() == 1) {
+                out = pages.get(0);
+            } else {
+                int w = 0, total = 0;
+                for (Bitmap b : pages) { w = Math.max(w, b.getWidth()); total += b.getHeight(); }
+                total += gap * (pages.size() - 1);
+                out = Bitmap.createBitmap(w, total, Bitmap.Config.ARGB_8888);
+                Canvas c = new Canvas(out);
+                c.drawColor(Color.WHITE);
+                Paint line = new Paint();
+                line.setColor(0xFFCCCCCC);
+                int y = 0;
+                for (int i = 0; i < pages.size(); i++) {
+                    Bitmap b = pages.get(i);
+                    c.drawBitmap(b, 0, y, null);
+                    y += b.getHeight();
+                    if (i < pages.size() - 1) {
+                        c.drawRect(0, y + gap / 2f - 1, w, y + gap / 2f + 1, line);
+                        y += gap;
+                    }
                 }
             }
             File dir = new File(act.getFilesDir(), "jpg");
@@ -814,20 +823,29 @@ final class Runner {
         }
     }
 
-    /** Height of the page that has something on it, plus a small margin. */
-    private static int contentBottom(Bitmap bm) {
+    /** The part of the page that has something printed on it (null if the page is empty). */
+    private static Rect contentBounds(Bitmap bm) {
         int w = bm.getWidth(), h = bm.getHeight();
         int[] row = new int[w];
-        for (int y = h - 1; y >= 0; y--) {
+        int top = -1, bottom = -1, left = w, right = -1;
+        for (int y = 0; y < h; y += 2) {
             bm.getPixels(row, 0, w, 0, y, w, 1);
-            for (int x = 0; x < w; x += 2) {
+            boolean any = false;
+            for (int x = 0; x < w; x++) {
                 int p = row[x];
                 if (((p >> 16) & 0xff) < 235 || ((p >> 8) & 0xff) < 235 || (p & 0xff) < 235) {
-                    return Math.min(h, y + 48);
+                    any = true;
+                    if (x < left) left = x;
+                    if (x > right) right = x;
                 }
             }
+            if (any) {
+                if (top < 0) top = y;
+                bottom = y;
+            }
         }
-        return 0;
+        if (top < 0 || right < left) return null;
+        return new Rect(left, top, right + 1, Math.min(h, bottom + 2));
     }
 
     /** Copies the photo into Pictures/VCTS so it shows in the Gallery (Android 10 and newer). */

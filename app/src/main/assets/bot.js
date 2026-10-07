@@ -567,12 +567,60 @@
   };
 
   /* ---------- Print page ---------- */
-  vh.preparePrint = function () {
-    var s = document.createElement('style');
-    s.textContent = '.main-header,.main-sidebar,.main-footer,.control-sidebar,.box-header,.content-header,.navbar,.no-print{display:none!important}' +
-      '.content-wrapper{margin-left:0!important;padding-top:0!important;min-height:0!important}body{background:#fff!important}';
-    document.head.appendChild(s);
-    return { ok: document.body.innerText.indexOf('Consignment ID') > -1 };
+  /*
+   * Puts the whole consignment on ONE A4 landscape page, as large as it fits.
+   * Like the website's own "Print" button, only #printableArea is printed. The layout is fixed
+   * (same on screen and paper), measured, and then zoomed to fill the page.
+   */
+  var PAGE = { w: 1040, h: 720 };   // CSS px that safely fit inside A4 landscape with small margins
+  vh.preparePrint = async function () {
+    var pa = document.getElementById('printableArea');
+    if (!pa) {
+      var s0 = document.createElement('style');
+      s0.textContent = '.main-header,.main-sidebar,.main-footer,.control-sidebar,.box-header,.content-header,.navbar,.no-print{display:none!important}' +
+        '.content-wrapper{margin-left:0!important;padding-top:0!important;min-height:0!important}body{background:#fff!important}';
+      document.head.appendChild(s0);
+      return { ok: document.body.innerText.indexOf('Consignment ID') > -1, fitted: false };
+    }
+    var holder = document.createElement('div');
+    holder.id = 'vh-print';
+    holder.appendChild(pa);
+    document.body.innerHTML = '';
+    document.body.className = '';
+    document.body.appendChild(holder);
+    var st = document.createElement('style');
+    st.textContent =
+      '@page{size:A4 landscape;margin:5mm}' +
+      'html,body{margin:0!important;padding:0!important;height:auto!important;min-height:0!important;overflow:visible!important;background:#fff!important}' +
+      '#vh-print{font-family:"Times New Roman",Times,serif!important;font-size:14px;line-height:1.35;color:#000;box-sizing:border-box;padding:2px 4px}' +
+      '#vh-print .row{margin-left:0!important;margin-right:0!important}' +
+      '#vh-print [class*="col-md-"]{float:left;position:relative;min-height:1px;padding-left:8px;padding-right:8px;box-sizing:border-box}' +
+      '#vh-print .col-md-12{width:100%}#vh-print .col-md-3{width:25%}#vh-print .col-md-4{width:40%}' +
+      '#vh-print .row:after{content:"";display:table;clear:both}' +
+      '#vh-print .box-body{padding:4px!important}' +
+      '#vh-print .table-responsive{overflow:visible!important;border:0!important;width:auto!important;margin-bottom:0!important;min-height:0!important}' +
+      '#vh-print table{border-collapse:collapse!important}' +
+      '#vh-print td,#vh-print th{border:1px solid #777!important;padding:4px 6px!important;vertical-align:middle!important;color:#000!important}' +
+      '#vh-print .consignment_documents{width:100%!important;margin:0!important}' +
+      '#vh-print .consignment_documents td{white-space:nowrap!important}' +
+      '#vh-print .consignment_documents th{white-space:normal!important;text-align:center;font-size:13px}' +
+      '#vh-print img{max-width:none!important}' +
+      '@media print{#vh-print *{color:#000!important}}';
+    document.head.appendChild(st);
+    await vh.waitImages();
+    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) { }
+    await sleep(200);
+    // natural size of the document laid out without squeezing
+    holder.style.width = 'max-content';
+    var w = Math.ceil(Math.max(holder.scrollWidth, holder.getBoundingClientRect().width, 900));
+    holder.style.width = w + 'px';
+    await sleep(100);
+    var h = Math.ceil(Math.max(holder.scrollHeight, holder.getBoundingClientRect().height));
+    var z = Math.min(PAGE.w / w, PAGE.h / h) * 0.98;
+    z = Math.max(0.2, Math.min(z, 2.5));
+    holder.style.zoom = String(z);
+    await sleep(100);
+    return { ok: document.body.innerText.indexOf('Consignment ID') > -1, fitted: true, w: w, h: h, zoom: z };
   };
   vh.waitImages = function () {
     return vh.waitFor(function () {
